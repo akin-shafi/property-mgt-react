@@ -1,79 +1,65 @@
-import { DayPilotScheduler } from "@daypilot/daypilot-lite-react";
-import DashboardLayout from "../../components/utils/DashboardLayout";
+// Scheduler.js
+// import React from "react";
+import { resources, events } from "../../hooks/useData"; // Import the data
 
-const RoomScheduler = () => {
-  // Room data
-  const rooms = [
-    { id: "101", name: "Room 101" },
-    { id: "102", name: "Room 102" },
-    { id: "103", name: "Room 103" },
-    { id: "104", name: "Room 104" },
-    { id: "105", name: "Room 105" },
-  ];
+import { DayPilotScheduler } from "daypilot-pro-react"; // DayPilot Scheduler
 
-  // Booking data
-  const bookings = [
-    {
-      id: "1",
-      resource: "101",
-      start: "2024-11-20T12:00:00",
-      end: "2024-11-22T11:00:00",
-      text: "Occupied - Martyn Barrow",
-      status: "Occupied",
-    },
-    {
-      id: "2",
-      resource: "102",
-      start: "2024-11-21T14:00:00",
-      end: "2024-11-24T10:00:00",
-      text: "Occupied - Binny Hannaby",
-      status: "Occupied",
-    },
-    {
-      id: "3",
-      resource: "103",
-      start: "2024-11-23T13:00:00",
-      end: "2024-11-25T11:00:00",
-      text: "Maintenance",
-      status: "Maintenance",
-    },
-    {
-      id: "4",
-      resource: "104",
-      start: "2024-11-20T10:00:00",
-      end: "2024-11-22T09:00:00",
-      text: "Reserved - Kalindi Lardiner",
-      status: "Reserved",
-    },
-  ];
-
-  // Scheduler configuration
-  const schedulerConfig = {
+const Scheduler = () => {
+  const config = {
+    scale: "Day",
+    days: 365, // Show a year of bookings
+    startDate: "2024-11-21",
     timeHeaders: [
-      { groupBy: "Day", format: "MMM d, yyyy" },
-      { groupBy: "Hour" },
+      { groupBy: "Month" },
+      { groupBy: "Day", format: "MMM dd" }, // e.g., "Saturday, Nov 25" format: "dddd, MMM d"
     ],
-    scale: "Hour",
-    startDate: "2024-11-20",
-    days: 7,
-    resources: rooms.map((room) => ({ id: room.id, name: room.name })),
-    events: bookings,
-    eventHeight: 30,
-    rowHeaderWidth: 120,
-    cellWidth: 60,
-    onEventClick: (args) => {
-      alert(`Booking Details:\n${args.e.data.text}`);
+    rowHeaderWidth: 150, // Room info column width
+    eventBorderRadius: 5,
+    cellWidth: 70,
+    footerHeight: 100, // Footer for availability
+    resources: resources.flatMap((group) =>
+      group.children.map((child) => ({
+        id: child.id,
+        name: child.name,
+      }))
+    ),
+    events: events.map((event) => ({
+      id: event.id,
+      text: event.text,
+      start: event.start,
+      end: event.end,
+      resource: event.resource,
+      barColor: event.barColor,
+    })),
+    rowHeaderColumns: [
+      { name: "Room", width: 150 },
+      // { name: "Room Type", width: 150 },
+    ],
+    onBeforeEventRender: (args) => {
+      if (args.data.status) {
+        args.data.cssClass = args.data.status.toLowerCase().replace(" ", "-");
+      } else {
+        args.data.cssClass = "default"; // Apply a default class if status is undefined
+      }
     },
   };
 
   return (
-    <DashboardLayout>
-      <div>
-        <h1>Room Booking Scheduler</h1>
-        <DayPilotScheduler {...schedulerConfig} />
+    <div>
+      <DayPilotScheduler {...config} />
+      <div className="legend mt-4">
+        <span className="mr-1 py-2 px-2" style={{ backgroundColor: "#4caf50" }}>
+          Arrived
+        </span>
+        <span className="mr-1 py-2 px-2" style={{ backgroundColor: "#2196f3" }}>
+          Confirmed Reservation
+        </span>
+        <span className="mr-1 py-2 px-2" style={{ backgroundColor: "#ff9800" }}>
+          Checked Out
+        </span>
       </div>
-    </DashboardLayout>
+    </div>
   );
 };
 
-export default RoomScheduler;
+export default Scheduler;

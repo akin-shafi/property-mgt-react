@@ -149,6 +149,29 @@ body {
 
   }
 
+  .scheduler-header {
+    margin-bottom: 20px;
+    text-align: right;
+  }
+  
+  .filter-btn {
+    padding: 10px;
+    background-color: #0088cc;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .filter-btn.active {
+    background-color: #005fa3;
+  }
+  
+  .filter-btn:hover {
+    background-color: #007bff;
+  }
+  
+
   @keyframes clickEffect {
     0% {
       transform: scale(1);
@@ -209,6 +232,10 @@ body {
 
 .custom-tabs .ant-tabs-ink-bar {
   background-color: #247a84;
+}
+
+.default {
+  background-color: gray;
 }
 
 

@@ -7,6 +7,7 @@ import ForgotPassword from "./pages/auth/ForgotPassword";
 import VerifyTwoFactor from "./pages/auth/VerifyTwoFactor";
 import Onboarding from "./pages/onboarding/Onboarding";
 import FrontOffice from "./pages/frontOffice";
+
 import Dashboard from "./pages/dashboard";
 
 // Define routes
@@ -36,6 +37,7 @@ const router = createBrowserRouter(
       path: "/frontoffice",
       element: <FrontOffice />,
     },
+
     {
       path: "/onboarding",
       element: <OnboardingLayout />,
