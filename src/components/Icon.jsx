@@ -1,5 +1,5 @@
 // Icon.js
-import React from "react";
+// import React from "react";
 
 export const DashboardIcon = ({ className }) => (
   <svg
@@ -224,8 +224,8 @@ export const AnnouncementIcon = ({ className }) => {
       // className={className}
     >
       <path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
+        fillRule="evenodd"
+        clipRule="evenodd"
         d="M19.167 2.85806C19.167 1.70065 18.0163 0.895622 16.929 1.29238L10.8474 3.51164L4.74047 3.98917C3.0056 4.12483 1.66699 5.57219 1.66699 7.31236V8.52141C1.66699 10.2616 3.0056 11.7089 4.74047 11.8446L5.0843 11.8715L5.67073 16.9659C5.81511 18.2202 6.87701 19.1669 8.13955 19.1669C9.62887 19.1669 10.7837 17.8659 10.6072 16.3871L10.1149 12.2649L10.8474 12.3221L16.929 14.5414C18.0163 14.9381 19.167 14.1331 19.167 12.9757V2.85806ZM4.8704 5.65076L10.1926 5.23459V10.5992L4.8704 10.183C4.00296 10.1152 3.33366 9.39149 3.33366 8.52141V7.31236C3.33366 6.44228 4.00296 5.71859 4.8704 5.65076ZM17.5003 12.9757L11.8593 10.9172V4.91654L17.5003 2.85806L17.5003 12.9757ZM7.32646 16.7754L6.77721 12.0039L8.42058 12.1324L8.95224 16.5847C9.0104 17.0717 8.63005 17.5002 8.13955 17.5002C7.72374 17.5002 7.37401 17.1884 7.32646 16.7754Z"
         className={className}
       />
@@ -241,60 +241,60 @@ export const CalendarIcon = ({ className }) => {
       viewBox="0 0 20 20"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className={className}
     >
       <path
         d="M6.66699 1.6665V4.1665"
         stroke="white"
-        stroke-width="1.5"
-        stroke-miterlimit="10"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.5"
+        strokeMiterlimit="10"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className={className}
       />
       <path
         d="M13.333 1.6665V4.1665"
         stroke="white"
-        stroke-width="1.5"
-        stroke-miterlimit="10"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.5"
+        strokeMiterlimit="10"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M2.91699 7.5752H17.0837"
         stroke="white"
-        stroke-width="1.5"
-        stroke-miterlimit="10"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.5"
+        strokeMiterlimit="10"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M17.5 7.08317V14.1665C17.5 16.6665 16.25 18.3332 13.3333 18.3332H6.66667C3.75 18.3332 2.5 16.6665 2.5 14.1665V7.08317C2.5 4.58317 3.75 2.9165 6.66667 2.9165H13.3333C16.25 2.9165 17.5 4.58317 17.5 7.08317Z"
         stroke="white"
-        stroke-width="1.5"
-        stroke-miterlimit="10"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.5"
+        strokeMiterlimit="10"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M9.99607 11.4167H10.0036"
         stroke="white"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M6.91209 11.4167H6.91957"
         stroke="white"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M6.91209 13.9167H6.91957"
         stroke="white"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );
@@ -533,7 +533,7 @@ export const ApproveIcon = () => {
     <svg
       stroke="currentColor"
       fill="currentColor"
-      stroke-width="0"
+      strokeWidth="0"
       viewBox="0 0 512 512"
       className="group-disabled:text-[#A7A7A7] text-[#0A9C55]"
       height="1em"
@@ -578,6 +578,28 @@ export const EditIcon = () => {
       height="24"
     >
       <path d="M3 17.25V21h3.75L15.62 13.12l-3.75-3.75L3 17.25zm2.74 2.75h1.74l10.39-10.39-1.74-1.74-10.39 10.39zM18.36 4.64l1.74 1.74c.38.38.38.99 0 1.37l-3.74 3.74-3.75-3.74 3.75-3.75c.38-.38.99-.38 1.37 0l1.74 1.74z" />
+    </svg>
+  );
+};
+
+export const RoomIcon = () => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="h-4 w-4 mr-2"
+    >
+      <path d="M2 20v-8a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v8" />
+      <path d="M4 10V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4" />
+      <path d="M12 4v6" />
+      <path d="M2 20h20" />
     </svg>
   );
 };

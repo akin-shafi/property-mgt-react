@@ -123,6 +123,7 @@ body {
   .accent-appOrange {
     accent-color: #ea580c !important;
   }
+ 
 
   .bg-appOrange{
     background-color: #ea580c !important;
@@ -146,7 +147,10 @@ body {
 
   .bg-appGreenLight{
     background-color: #247A84 !important;
-
+  }
+  
+  .text-appOrange{
+    color: #ea580c !important;
   }
 
   .scheduler-header {
@@ -227,11 +231,11 @@ body {
 }
 
 .custom-tabs .ant-tabs-tab-active .ant-tabs-tab-btn {
-  color: #247a84 !important;
+  color: #002B4D !important;
 }
 
 .custom-tabs .ant-tabs-ink-bar {
-  background-color: #247a84;
+  background-color: #002B4D;
 }
 
 .default {
@@ -239,4 +243,40 @@ body {
 }
 
 
+/* ---- */
+
+.scheduler_default_rowheader {
+  background: -webkit-gradient(linear, left top, left bottom, from(#eeeeee), to(#dddddd)); /* Old syntax, to be updated */
+  background: -moz-linear-gradient(to bottom, #eeeeee 0%, #dddddd); /* Updated to use 'to bottom' */
+  background: -ms-linear-gradient(to bottom, #eeeeee 0%, #dddddd); /* Updated to use 'to bottom' */
+  background: -webkit-linear-gradient(to bottom, #eeeeee 0%, #dddddd); /* Updated to use 'to bottom' */
+  background: linear-gradient(to bottom, #eeeeee 0%, #dddddd); /* Updated to use 'to bottom' */
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorStr="#eeeeee", endColorStr="#dddddd"); /* No change needed */
+}
+
+.scheduler_default_rowheader_inner 
+{
+        border-right: 1px solid #ccc;
+}
+.scheduler_default_rowheadercol2
+{
+    background: White;
+}
+.scheduler_default_rowheadercol2 .scheduler_default_rowheader_inner 
+{
+    top: 2px;
+    bottom: 2px;
+    left: 2px;
+    background-color: transparent;
+        border-left: 5px solid #1a9d13; /* green */
+        border-right: 0px none;
+}
+.status_dirty.scheduler_default_rowheadercol2 .scheduler_default_rowheader_inner
+{
+        border-left: 5px solid #ea3624; /* red */
+}
+.status_cleanup.scheduler_default_rowheadercol2 .scheduler_default_rowheader_inner
+{
+        border-left: 5px solid #f9ba25; /* orange */
+}
 

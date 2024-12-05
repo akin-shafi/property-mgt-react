@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext"; // Adjust the path as needed
 import { useNavigate, Link } from "react-router-dom"; // Use Link from React Router
 import { Spin } from "antd"; // Ant Design components
-import { Button } from "../../components/ui/Button";
+import { Button } from "../../components/ui/button";
 
 import {
   LockOutlined,
@@ -50,13 +50,19 @@ export default function Login() {
       if (result?.statusCode === 200) {
         const { token, user } = result;
 
-        localStorage.setItem("token", token);
-        localStorage.setItem("user", JSON.stringify(user));
+        console.log("user", user);
 
-        // Dispatch the LOGIN action to update global state
-        dispatch({ type: "LOGIN", payload: { token, user } });
+        if (user.onboardingStep < 4) {
+          navigate(`/onboarding?step=${user.onboardingStep}`);
+        } else {
+          localStorage.setItem("token", token);
+          localStorage.setItem("user", JSON.stringify(user));
 
-        navigate("/dashboard");
+          // Dispatch the LOGIN action to update global state
+          dispatch({ type: "LOGIN", payload: { token, user } });
+
+          navigate("/dashboard");
+        }
       } else {
         setError(result.error || "Login failed");
       }
@@ -183,7 +189,7 @@ export default function Login() {
               </div>
               <Button
                 type="submit"
-                className="w-full bg-appOrange hover:bg-appOrangeLight"
+                className="w-full"
                 size="lg"
                 loading={loading}
               >

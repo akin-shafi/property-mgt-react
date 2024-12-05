@@ -86,6 +86,11 @@ const SideNav = forwardRef(({ isOpen, onClose, isApplicant }, ref) => {
                 <NewCandidateIcon className={getIconClass("/frontoffice")} />
                 <span className="mt-1">Front Office</span>
               </Link>
+
+              <Link to="/reservation" className={getLinkClass("/reservation")}>
+                <CalendarIcon className={getIconClass("/reservation")} />
+                <span className="mt-1">Reservation</span>
+              </Link>
               {/* Add more admin-specific links here */}
             </>
           )}

@@ -1,59 +1,153 @@
 import { useEffect, useState } from "react";
-import { DayPilot, DayPilotScheduler } from "daypilot-pro-react";
-import { hotelBookings, hotelRooms } from "../../hooks/useHotelData"; // Import the data
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext"; // Access AuthContext
+import ReservationLayout from "../../components/utils/ReservationLayout";
+import { DayPilotScheduler } from "daypilot-pro-react"; // DayPilot Scheduler
+import { getSchedulerConfig } from "../../hooks/SchedulerConfig";
+import { hotelBookings } from "../../hooks/useReservation";
+import { fetchHotelRoomsWithPrice } from "../../hooks/useAction";
 
+import { Spin } from "antd";
 const Scheduler = () => {
+  const { state } = useAuth();
+  const token = state.token;
+  const hotelId = state?.user?.hotelId;
+  const [hotelRooms, setHotelRooms] = useState([]);
+  const [hotelReservations, setHotelReservations] = useState([]);
   const [scheduler, setScheduler] = useState(null);
   const [events, setEvents] = useState([]);
   const [resources, setResources] = useState([]);
-  const config = {
-    timeHeaders: [{ groupBy: "Month" }, { groupBy: "Day", format: "d" }],
-    scale: "Day",
-    days: 365, // Show a year of bookings
-    startDate: "2024-09-01",
-    timeRangeSelectedHandling: "Enabled",
-    eventBorderRadius: "8px",
-    onTimeRangeSelected: async (args) => {
-      const scheduler = args.control;
-      const modal = await DayPilot.Modal.prompt(
-        "Enter Booking Details (e.g., 'John Doe - Deluxe Room')",
-        "New Booking"
-      );
-      scheduler.clearSelection();
-      if (modal.canceled) {
-        return;
-      }
-      scheduler.events.add({
-        start: args.start,
-        end: args.end,
-        id: DayPilot.guid(),
-        resource: args.resource,
-        text: modal.result,
-      });
-    },
-  };
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
+  // Fetch and format room data
+  // useEffect(() => {
+  //   const fetchRoomData = async () => {
+  //     setLoading(true);
+  //     setError(null);
+
+  //     try {
+  //       const hotelData = await fetchhotelRooms(hotelId, token);
+  //       const groupedRooms = hotelData.reduce((acc, room) => {
+  //         const { roomType } = room;
+  //         if (!acc[roomType]) {
+  //           acc[roomType] = [];
+  //         }
+  //         acc[roomType].push({
+  //           name: `Room ${room.roomName}`,
+  //           id: room.roomName,
+  //         });
+  //         return acc;
+  //       }, {});
+
+  //       const formattedRooms = Object.entries(groupedRooms).map(
+  //         ([roomType, rooms]) => ({
+  //           name: roomType,
+  //           id: roomType,
+  //           expanded: true,
+  //           children: rooms,
+  //         })
+  //       );
+
+  //       setHotelRooms(formattedRooms);
+  //     } catch (err) {
+  //       setError(err.message || "Failed to fetch room data.");
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   if (hotelId && token) {
+  //     fetchRoomData();
+  //   }
+  // }, [hotelId, token]);
   useEffect(() => {
-    if (!scheduler) {
-      return;
+    const fetchRoomData = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const hotelData = await fetchHotelRoomsWithPrice(hotelId, token);
+
+        // console.log("Rooms:", hotelData);
+        // Format the rooms without grouping by roomType
+        const formattedRooms = hotelData.map((room) => ({
+          id: room.roomName,
+          name: `Room ${room.roomName}`,
+          status: room.maintenanceStatus,
+          capacity: room.capacity,
+          avalability: room.isAvailable,
+        }));
+
+        setHotelRooms(formattedRooms);
+      } catch (err) {
+        setError(err.message || "Failed to fetch room data.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (hotelId && token) {
+      fetchRoomData();
     }
+  }, [hotelId, token]);
 
-    // Load events and resources from the data file
-    setEvents(hotelBookings);
-    setResources(hotelRooms);
+  // Fetch and format reservation data
+  useEffect(() => {
+    const fetchReservationData = async () => {
+      setLoading(true);
+      setError(null);
 
-    scheduler.scrollTo("2024-11-01");
-  }, [scheduler]);
+      try {
+        const reservationData = await hotelBookings(hotelId, token);
+        setHotelReservations(reservationData);
+      } catch (err) {
+        setError(err.message || "Failed to fetch reservation data.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (hotelId && token) {
+      fetchReservationData();
+    }
+  }, [hotelId, token]);
+
+  // Initialize scheduler once it's available
+  useEffect(() => {
+    if (scheduler) {
+      setEvents(hotelReservations);
+      setResources(hotelRooms);
+
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+      scheduler.scrollTo(sevenDaysAgo.toISOString().split("T")[0]);
+    }
+  }, [scheduler, hotelReservations, hotelRooms]);
+
+  const config = getSchedulerConfig(
+    scheduler,
+    setScheduler,
+    events,
+    resources,
+    navigate
+  );
 
   return (
-    <div>
-      <DayPilotScheduler
-        {...config}
-        events={events}
-        resources={resources}
-        controlRef={setScheduler}
-      />
-    </div>
+    <ReservationLayout>
+      <Spin spinning={loading}>
+        <main className="mt-10">
+          {error && <div className="text-red-500">{error}</div>}
+          <DayPilotScheduler
+            {...config}
+            events={events}
+            resources={resources}
+            controlRef={setScheduler}
+          />
+        </main>
+      </Spin>
+    </ReservationLayout>
   );
 };
 

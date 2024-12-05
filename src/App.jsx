@@ -1,13 +1,15 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
-import OnboardingLayout from "./components/utils/OnboardingLayout";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import VerifyTwoFactor from "./pages/auth/VerifyTwoFactor";
-import Onboarding from "./pages/onboarding/Onboarding";
 import FrontOffice from "./pages/frontOffice";
-
+import Rooms from "./pages/rooms";
+import Guests from "./pages/guests";
+import Reservations from "./pages/reservations";
+import NewReservations from "./pages/reservations/new";
+import Onboarding from "./pages/onboarding";
 import Dashboard from "./pages/dashboard";
 
 // Define routes
@@ -34,24 +36,37 @@ const router = createBrowserRouter(
       element: <Dashboard />,
     },
     {
-      path: "/frontoffice",
+      path: "/front-office",
       element: <FrontOffice />,
+    },
+    {
+      path: "/reservations",
+      element: <Reservations />,
+    },
+    {
+      path: "/reservations/new",
+      element: <NewReservations />,
     },
 
     {
       path: "/onboarding",
-      element: <OnboardingLayout />,
-      children: [
-        {
-          index: true, // This sets the default child route
-          element: <Onboarding />,
-        },
-      ],
+      element: <Onboarding />,
+    },
+
+    {
+      path: "/rooms",
+      element: <Rooms />,
+    },
+
+    {
+      path: "/guests",
+      element: <Guests />,
     },
   ],
   {
     future: {
       v7_relativeSplatPath: true, // Enable the relative splat path flag
+      v7_startTransition: true, // Enable the startTransition future flag
     },
   }
 );

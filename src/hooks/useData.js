@@ -1,25 +1,5 @@
 // data.js
 export const resources = [
-  //   {
-  //     id: "business-suite",
-  //     name: "Business Suite",
-  //     expanded: true,
-  //     children: [
-  //       { id: "BS-101", name: "BS - 101" },
-  //       { id: "BS-102", name: "BS - 102" },
-  //       { id: "BS-103", name: "BS - 103" },
-  //     ],
-  //   },
-  //   {
-  //     id: "deluxe",
-  //     name: "Deluxe",
-  //     expanded: true,
-  //     children: [
-  //       { id: "DLX-201", name: "DLX - 201" },
-  //       { id: "DLX-202", name: "DLX - 202" },
-  //       { id: "DLX-203", name: "DLX - 203" },
-  //     ],
-  //   },
   {
     id: "standard",
     name: "Standard Rooms",
