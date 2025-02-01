@@ -1,14 +1,16 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
 import { FaPlusCircle } from "react-icons/fa";
-import { useAuth } from "../../../context/AuthContext"; // Access AuthContext
+import { useSession } from "../../../hooks/useSession";
+
 import { Spin } from "antd";
 import { RiDeleteBin5Line } from "react-icons/ri";
 import { fetchHotelDetailsByTenantId } from "../../../hooks/useAction";
 
 const RoomSetup = ({ onChange }) => {
-  const { state } = useAuth();
-  const token = state.token;
-  const tenantId = state?.user?.tenantId;
+  const { session } = useSession();
+  const token = session.token;
+  const tenantId = session?.user?.tenantId;
 
   const initialRow = {
     roomType: "",

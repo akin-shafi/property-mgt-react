@@ -29,7 +29,7 @@ export const getSchedulerConfig = (
         const room = args.resource;
 
         navigate(
-          `/reservations/new?startDate=${encodeURIComponent(
+          `/reservations/new-test?startDate=${encodeURIComponent(
             start
           )}&endDate=${encodeURIComponent(end)}&roomName=${encodeURIComponent(
             room

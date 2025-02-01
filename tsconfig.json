@@ -1,11 +1,12 @@
 {
-    "compilerOptions": {
-      "baseUrl": "src",
-      "paths": {
-        "@/components/*": ["components/*"],
-        "@/utils/*": ["utils/*"],
-        "@/hooks/*": ["hooks/*"]
-      }
+  "compilerOptions": {
+    "jsx": "react",
+    "baseUrl": "src",
+    "paths": {
+      "@/components/*": ["components/*"],
+      "@/utils/*": ["utils/*"],
+      "@/hooks/*": ["hooks/*"],
+      "@/assets/*": ["assets/*"] // Add if you want to use "@assets/*" alias
     }
   }
-  
+}

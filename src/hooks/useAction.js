@@ -1,9 +1,11 @@
 import { useState } from "react";
 
+const API_BASE_URL = import.meta.env.VITE_BASE_URL;
+
 export const fetchCompleteRoomTypeDetailsByHotelId = async (hotelId, token) => {
   try {
     const response = await fetch(
-      `${import.meta.env.VITE_BASE_URL}/room-type/hotels/${hotelId}`,
+      `${API_BASE_URL}/room-type/hotels/${hotelId}`,
       {
         headers: { Authorization: `Bearer ${token}` },
       }
@@ -28,7 +30,7 @@ export const fetchCompleteRoomTypeDetailsByHotelId = async (hotelId, token) => {
 export const fetchHotelDetailsByTenantId = async (tenantId, token) => {
   try {
     const response = await fetch(
-      `${import.meta.env.VITE_BASE_URL}/property-details/tenant/${tenantId}`,
+      `${API_BASE_URL}/property-details/tenant/${tenantId}`,
       {
         headers: { Authorization: `Bearer ${token}` },
       }
@@ -52,12 +54,9 @@ export const fetchHotelDetailsByTenantId = async (tenantId, token) => {
 
 export const fetchAvailableRoomTypesByHotelId = async (hotelId, token) => {
   try {
-    const response = await fetch(
-      `${import.meta.env.VITE_BASE_URL}/room-type/${hotelId}/types`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    );
+    const response = await fetch(`${API_BASE_URL}/room-type/${hotelId}/types`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
 
     if (!response.ok) {
       const errorData = await response.json();
@@ -75,12 +74,9 @@ export const fetchAvailableRoomTypesByHotelId = async (hotelId, token) => {
 
 export const fetchHotelRoomsByHotelId = async (hotelId, token) => {
   try {
-    const response = await fetch(
-      `${import.meta.env.VITE_BASE_URL}/rooms/hotels/${hotelId}`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    );
+    const response = await fetch(`${API_BASE_URL}/rooms/hotels/${hotelId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
 
     if (!response.ok) {
       const errorData = await response.json();
@@ -99,7 +95,7 @@ export const fetchHotelRoomsByHotelId = async (hotelId, token) => {
 export const fetchHotelRoomsWithPrice = async (hotelId, token) => {
   try {
     const response = await fetch(
-      `${import.meta.env.VITE_BASE_URL}/rooms/${hotelId}/with-prices`,
+      `${API_BASE_URL}/rooms/${hotelId}/with-prices`,
       {
         headers: { Authorization: `Bearer ${token}` },
       }
@@ -121,12 +117,9 @@ export const fetchHotelRoomsWithPrice = async (hotelId, token) => {
 
 export const fetchMaintenanceStatusOptions = async (token) => {
   try {
-    const response = await fetch(
-      `${import.meta.env.VITE_BASE_URL}/rooms/maintenance-options`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    );
+    const response = await fetch(`${API_BASE_URL}/rooms/maintenance-options`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
 
     if (!response.ok) {
       const errorData = await response.json();
@@ -152,7 +145,7 @@ export const useCreateRoom = () => {
     setSuccess(false);
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_BASE_URL}/rooms`, {
+      const response = await fetch(`${API_BASE_URL}/rooms`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -180,6 +173,23 @@ export const useCreateRoom = () => {
   return { loading, error, success, createRoom };
 };
 
-export const verifyDiscountCode = () => {
-  console.log("verifyDiscountCode");
+export const verifyDiscountCode = async (code, token) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/promotions/${code}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to fetch room setup data.");
+    }
+
+    const data = await response.json();
+
+    // Ensure that data is always an array
+    // return Array.isArray(data) ? data : [];
+    return data;
+  } catch (error) {
+    throw new Error(error.message || "Error fetching room types.");
+  }
 };

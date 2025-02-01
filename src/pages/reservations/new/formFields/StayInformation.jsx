@@ -1,77 +1,109 @@
-"use client";
-import { useState, useEffect, useCallback } from "react";
-import { DatePicker, Select, Input, Spin, message } from "antd";
-import dayjs from "dayjs";
+import { useState, useEffect, useCallback, useRef } from "react";
+import { DatePicker, Select, Input, Spin, Checkbox } from "antd";
 import { FaPlusCircle } from "react-icons/fa";
 import { RiDeleteBin5Line } from "react-icons/ri";
+import dayjs from "dayjs";
 import {
   fetchHotelRoomsWithPrice,
   verifyDiscountCode,
-} from "../../../../hooks/useAction";
-import { useAuth } from "../../../../context/AuthContext"; // Access AuthContext
+} from "@/hooks/useAction";
+import { useSession } from "@/hooks/useSession";
 
-const StayInformation = ({
-  startDate,
-  endDate,
-  roomName,
-  onFormDataChange,
-}) => {
-  const { state } = useAuth();
-  const token = state.token;
-  const hotelId = state?.user?.hotelId;
+const StayInformation = ({ data, onChange }) => {
+  const roomNameFromUrl = data.roomName;
+  const { session } = useSession();
+  const token = session?.token;
+  const hotelId = session?.user?.hotelId;
 
-  const [checkIn, setCheckIn] = useState(startDate ? dayjs(startDate) : null);
-  const [checkOut, setCheckOut] = useState(endDate ? dayjs(endDate) : null);
-  const [nights, setNights] = useState(0);
-  const [rooms, setRooms] = useState([
-    { id: 1, adultCount: 1, childCount: 0, price: 0 },
-  ]);
-  const [roomOptions, setRoomOptions] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [totalPrice, setTotalPrice] = useState(0);
-  const [discountCode, setDiscountCode] = useState("");
-  const [discount, setDiscount] = useState(0);
+  const [formState, setFormState] = useState({
+    checkIn: data.startDate ? dayjs(data.startDate) : null,
+    checkOut: data.endDate ? dayjs(data.endDate) : null,
+    nights: 0,
+    rooms: [{ id: 1, adultCount: 1, childCount: 0, price: 0 }],
+    roomOptions: [],
+    loading: false,
+    error: null,
+    totalPrice: 0,
+    originalTotalPrice: 0,
+    discountCode: "",
+    discountType: "",
+    discount: 0,
+    isAddTax: false,
+    promotionError: "",
+    isDiscountLoading: false,
+    grandTotal: 0,
+  });
 
-  // Calculate Nights
+  const firstRender = useRef(true);
+
+  const taxRate = 0.075; // 7.5%
+
+  const addTax = () => {
+    setFormState((prevState) => {
+      const newStatus = !prevState.isAddTax;
+      const newTotalPrice = newStatus
+        ? prevState.originalTotalPrice * (1 + taxRate)
+        : prevState.originalTotalPrice;
+      const updatedState = {
+        ...prevState,
+        isAddTax: newStatus,
+        totalPrice: newTotalPrice,
+      };
+      onChange(updatedState); // Notify parent of state change
+      return updatedState;
+    });
+  };
+
   const calculateNights = useCallback((inDate, outDate) => {
     if (inDate && outDate) {
       const diff = dayjs(outDate).diff(dayjs(inDate), "day");
-      setNights(diff > 0 ? diff : 0);
+      setFormState((prevState) => ({
+        ...prevState,
+        nights: diff > 0 ? diff : 0,
+      }));
     }
   }, []);
 
-  // Calculate Total Price (Including Nights)
   const calculateTotalPrice = useCallback(() => {
-    const total = rooms.reduce((sum, room) => sum + room.price * nights, 0);
-    setTotalPrice(total - discount);
-  }, [rooms, nights, discount]);
+    const total = formState.rooms.reduce(
+      (sum, room) => sum + room.price * formState.nights,
+      0
+    );
+    const finalPrice = formState.isAddTax ? total * (1 + taxRate) : total;
+    setFormState((prevState) => ({
+      ...prevState,
+      originalTotalPrice: total,
+      grandTotal: total,
+      totalPrice: finalPrice - prevState.discount,
+    }));
+  }, [formState.rooms, formState.nights, formState.isAddTax, taxRate]);
 
-  // Fetch Room Options
   useEffect(() => {
     const fetchRooms = async () => {
-      setLoading(true);
+      setFormState((prevState) => ({ ...prevState, loading: true }));
       try {
         const data = await fetchHotelRoomsWithPrice(hotelId, token);
         const formattedOptions = data.map((room) => ({
           value: room.id,
-          label: `${room.roomName} - ${room.price} ${room.currency}`,
+          label: `${room.roomName} - ${room.price} `,
           price: room.price,
-          roomName: room.roomName, // Add roomName for matching
+          roomName: room.roomName,
         }));
 
-        setRoomOptions(formattedOptions);
-        setError(null);
+        setFormState((prevState) => ({
+          ...prevState,
+          roomOptions: formattedOptions,
+          error: null,
+        }));
 
-        // Pre-select room if roomName is provided
-        if (roomName) {
+        if (roomNameFromUrl) {
           const matchingRoom = formattedOptions.find(
-            (option) => option.roomName === roomName
+            (option) => option.roomName === roomNameFromUrl
           );
-
           if (matchingRoom) {
-            setRooms((prevRooms) =>
-              prevRooms.map((room, index) =>
+            setFormState((prevState) => ({
+              ...prevState,
+              rooms: prevState.rooms.map((room, index) =>
                 index === 0
                   ? {
                       ...room,
@@ -79,152 +111,182 @@ const StayInformation = ({
                       roomId: matchingRoom.value,
                     }
                   : room
-              )
-            );
+              ),
+            }));
           }
         }
       } catch (err) {
-        setError(`${err} Failed to fetch room data`);
+        setFormState((prevState) => ({
+          ...prevState,
+          error: `${err} Failed to fetch room data`,
+        }));
       } finally {
-        setLoading(false);
+        setFormState((prevState) => ({ ...prevState, loading: false }));
       }
     };
     fetchRooms();
-  }, [hotelId, token, roomName]);
-
-  // Inside the StayInformation component
+  }, [hotelId, token, roomNameFromUrl]);
 
   useEffect(() => {
-    // Automatically select a room matching the roomName (if provided)
-    if (roomName && roomOptions.length > 0) {
-      const matchingRoom = roomOptions.find((room) =>
-        room.label.toLowerCase().includes(roomName.toLowerCase())
-      );
-      if (matchingRoom) {
-        // Set the selected room price and update the rooms state
-        setRooms((prevRooms) =>
-          prevRooms.map((room, index) =>
-            index === 0 ? { ...room, price: matchingRoom.price } : room
-          )
-        );
-      }
-    }
-  }, [roomName, roomOptions]);
+    if (data.startDate && !formState.checkIn)
+      setFormState((prevState) => ({
+        ...prevState,
+        checkIn: dayjs(data.startDate),
+      }));
+    if (data.endDate && !formState.checkOut)
+      setFormState((prevState) => ({
+        ...prevState,
+        checkOut: dayjs(data.endDate),
+      }));
+  }, [data.startDate, data.endDate, formState.checkIn, formState.checkOut]);
 
-  // Sync Nights Calculation
   useEffect(() => {
-    if (startDate && !checkIn) setCheckIn(dayjs(startDate));
-    if (endDate && !checkOut) setCheckOut(dayjs(endDate));
-    calculateNights(startDate, endDate);
-  }, [startDate, endDate, checkIn, checkOut, calculateNights]);
+    calculateNights(formState.checkIn, formState.checkOut);
+  }, [formState.checkIn, formState.checkOut, calculateNights]);
 
-  // Sync Total Price Calculation
   useEffect(() => {
     calculateTotalPrice();
-  }, [rooms, discount, calculateTotalPrice]);
+  }, [
+    formState.rooms,
+    formState.nights,
+    formState.discount,
+    formState.isAddTax,
+    calculateTotalPrice,
+  ]);
 
-  // Handle Check-In Change
+  useEffect(() => {
+    if (firstRender.current) {
+      firstRender.current = false;
+      return;
+    }
+  }, []);
+
   const handleCheckInChange = (date) => {
-    setCheckIn(date);
-    calculateNights(date, checkOut);
+    const updatedState = { ...formState, checkIn: date };
+    setFormState(updatedState);
+    calculateNights(date, formState.checkOut);
+    onChange(updatedState); // Notify parent of state change
   };
 
-  // Handle Check-Out Change
   const handleCheckOutChange = (date) => {
-    setCheckOut(date);
-    calculateNights(checkIn, date);
+    const updatedState = { ...formState, checkOut: date };
+    setFormState(updatedState);
+    calculateNights(formState.checkIn, date);
+    onChange(updatedState); // Notify parent of state change
   };
 
-  // Add Room
   const addRoom = () => {
-    setRooms((prevRooms) => [
-      ...prevRooms,
-      { id: prevRooms.length + 1, adultCount: 1, childCount: 0, price: 0 },
-    ]);
+    setFormState((prevState) => {
+      const updatedRooms = [
+        ...prevState.rooms,
+        {
+          id: prevState.rooms.length + 1,
+          adultCount: 1,
+          childCount: 0,
+          price: 0,
+        },
+      ];
+      const updatedState = { ...prevState, rooms: updatedRooms };
+      onChange(updatedState); // Notify parent of state change
+      return updatedState;
+    });
   };
 
-  // Remove Room
   const removeRoom = (id) => {
-    setRooms((prevRooms) => prevRooms.filter((room) => room.id !== id));
+    setFormState((prevState) => {
+      const updatedRooms = prevState.rooms.filter((room) => room.id !== id);
+      const updatedState = { ...prevState, rooms: updatedRooms };
+      onChange(updatedState); // Notify parent of state change
+      return updatedState;
+    });
   };
 
-  // Handle Room Change
   const handleRoomChange = (id, field, value) => {
-    setRooms((prevRooms) =>
-      prevRooms.map((room) =>
+    setFormState((prevState) => {
+      const updatedRooms = prevState.rooms.map((room) =>
         room.id === id ? { ...room, [field]: value } : room
-      )
-    );
+      );
+      const updatedState = { ...prevState, rooms: updatedRooms };
+      onChange(updatedState); // Notify parent of state change
+      return updatedState;
+    });
   };
 
-  // Handle Room Select
   const handleRoomSelect = (id, value) => {
-    const selectedRoom = roomOptions.find((room) => room.value === value);
+    const selectedRoom = formState.roomOptions.find(
+      (room) => room.value === value
+    );
     if (selectedRoom) {
       handleRoomChange(id, "price", selectedRoom.price);
     }
+    onChange(selectedRoom);
   };
 
-  // Handle Discount Code Change
   const handleDiscountCodeChange = async (e) => {
     const code = e.target.value;
-    setDiscountCode(code);
-    if (code.length === 6) {
-      try {
-        const { type, amount } = await verifyDiscountCode(code, token);
-        let discountValue = 0;
-        if (type === "percentage") {
-          discountValue = (totalPrice * amount) / 100;
-        } else if (type === "value") {
-          discountValue = amount;
-        }
-        setDiscount(discountValue);
-      } catch (err) {
-        message.error(`${err}: Invalid discount code`);
+    setFormState((prevState) => ({ ...prevState, discountCode: code }));
+    onChange({ ...formState, discountCode: code }); // Notify parent of state change
 
-        setDiscount(0);
+    if (code.length === 6) {
+      setFormState((prevState) => ({ ...prevState, isDiscountLoading: true }));
+      try {
+        const data = await verifyDiscountCode(code, token);
+        let discountValue = 0;
+        if (data.status === 200) {
+          if (data.result.type === "percentage") {
+            discountValue =
+              (formState.originalTotalPrice * data.result.amount) / 100;
+          } else if (data.result.type === "value") {
+            discountValue = data.result.amount;
+          }
+          const updatedState = {
+            ...formState,
+            discount: discountValue,
+            discountType: data.result.type,
+            promotionError: "",
+          };
+          setFormState(updatedState);
+          onChange(updatedState); // Notify parent of state change
+          calculateTotalPrice();
+        } else {
+          const updatedState = {
+            ...formState,
+            promotionError: data.message || "Promotion not found",
+            discount: 0,
+          };
+          setFormState(updatedState);
+          onChange(updatedState); // Notify parent of state change
+        }
+      } catch (err) {
+        const updatedState = {
+          ...formState,
+          promotionError: err.message || "Promotion not found",
+          discount: 0,
+        };
+        setFormState(updatedState);
+        onChange(updatedState); // Notify parent of state change
+      } finally {
+        setFormState((prevState) => ({
+          ...prevState,
+          isDiscountLoading: false,
+        }));
+        onChange({ ...formState, isDiscountLoading: false }); // Notify parent of state change
       }
+    } else {
+      setFormState((prevState) => ({ ...prevState, promotionError: "" }));
+      onChange({ ...formState, promotionError: "" }); // Notify parent of state change
     }
   };
 
-  const handleFormChange = () => {
-    const formData = {
-      checkIn,
-      checkOut,
-      nights,
-      rooms,
-      totalPrice,
-      discountCode,
-      discount,
-    };
-    onFormDataChange(formData);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormState((prevState) => ({ ...prevState, [name]: value }));
+    onChange({ ...formState, [name]: value }); // Notify parent of state change
   };
 
-  // Update Form Data
-  useEffect(() => {
-    const formData = {
-      checkIn,
-      checkOut,
-      nights,
-      rooms,
-      totalPrice,
-      discountCode,
-      discount,
-    };
-    onFormDataChange(formData);
-  }, [
-    checkIn,
-    checkOut,
-    nights,
-    rooms,
-    totalPrice,
-    discountCode,
-    discount,
-    onFormDataChange,
-  ]);
-
   return (
-    <div className="p-6 bg-gray-100 rounded-md max-w-4xl mx-auto">
+    // Your JSX here
+    <div className="p-6 bg-gray-100 rounded-md w-full mb-4">
       {/* Check-in and Check-out */}
       <div className="flex items-center space-x-4 mb-4">
         <div className="w-1/3">
@@ -241,10 +303,9 @@ const StayInformation = ({
             showTime
             format="DD/MM/YYYY HH:mm"
             placeholder="Select Date & Time"
-            value={checkIn}
+            value={formState.checkIn}
             onChange={(date) => {
               handleCheckInChange(date);
-              handleFormChange();
             }}
             disabledDate={(currentDate) => {
               const oneWeekAgo = dayjs().subtract(7, "day").endOf("day");
@@ -266,10 +327,9 @@ const StayInformation = ({
             showTime
             format="DD/MM/YYYY HH:mm"
             placeholder="Select Date & Time"
-            value={checkOut}
+            value={formState.checkOut}
             onChange={(date) => {
               handleCheckOutChange(date);
-              handleFormChange();
             }}
             disabledDate={(currentDate) => {
               const oneWeekAgo = dayjs().subtract(7, "day").endOf("day");
@@ -286,20 +346,20 @@ const StayInformation = ({
           </label>
           <Input
             id="nights"
-            value={`${nights} Nights`}
+            onChange={handleChange}
+            value={`${formState.nights} Nights`}
             disabled
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
           />
         </div>
       </div>
-
       {/* Room Details */}
-      {loading ? (
+      {formState.loading ? (
         <Spin size="large" />
-      ) : error ? (
-        <p className="text-red-500">{error}</p>
+      ) : formState.error ? (
+        <p className="text-red-500">{formState.error}</p>
       ) : (
-        rooms.map((room) => (
+        formState.rooms.map((room) => (
           <div
             key={room.id}
             className="grid grid-cols-12 gap-4 items-end mb-4 bg-white p-4 rounded-md shadow-sm"
@@ -316,23 +376,20 @@ const StayInformation = ({
                 id={`room-${room.id}`}
                 className="w-full"
                 placeholder="Select Room"
-                options={roomOptions}
+                options={formState.roomOptions}
                 showSearch
                 optionFilterProp="label"
                 filterOption={(input, option) =>
                   option.label.toLowerCase().includes(input.toLowerCase())
                 }
                 value={
-                  roomOptions.find((option) => option.price === room.price)
-                    ?.value || null
-                } // Match the selected room's price or set null if not found
-                onChange={(value) => {
-                  handleRoomSelect(room.id, value);
-                  handleFormChange();
-                }}
+                  formState.roomOptions.find(
+                    (option) => option.price === room.price
+                  )?.value || null
+                }
+                onChange={(value) => handleRoomSelect(room.id, value)}
               />
             </div>
-            {/* Maturity */}
             <div className="col-span-6 md:col-span-3 lg:col-span-2">
               <label
                 htmlFor={`adult-count-${room.id}`}
@@ -354,8 +411,6 @@ const StayInformation = ({
                 className="w-full"
               />
             </div>
-
-            {/* Child Count */}
             <div className="col-span-6 md:col-span-3 lg:col-span-2">
               <label
                 htmlFor={`child-count-${room.id}`}
@@ -377,16 +432,11 @@ const StayInformation = ({
                 className="w-full"
               />
             </div>
-
-            {/* Remove */}
-            {rooms.length > 1 && (
+            {formState.rooms.length > 1 && (
               <div className="col-span-12 md:col-span-4 lg:col-span-2 flex justify-end items-center">
                 <div
                   className="flex items-center text-gray-500 hover:text-red-500 cursor-pointer"
-                  onClick={() => {
-                    removeRoom(room.id);
-                    handleFormChange();
-                  }}
+                  onClick={() => removeRoom(room.id)}
                 >
                   <RiDeleteBin5Line title="Remove" className="mr-2 text-lg" />
                   <span className="text-sm font-medium">Remove</span>
@@ -400,10 +450,7 @@ const StayInformation = ({
         <FaPlusCircle />
         <span
           className="cursor-pointer hover:underline hover:text-black"
-          onClick={() => {
-            addRoom();
-            handleFormChange();
-          }}
+          onClick={addRoom}
         >
           Add Room
         </span>
@@ -420,10 +467,12 @@ const StayInformation = ({
           </label>
           <Input
             id="discountCode"
-            value={discountCode}
+            value={formState.discountCode}
             onChange={handleDiscountCodeChange}
             maxLength={6}
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+            disabled={formState.isDiscountLoading}
+            suffix={formState.isDiscountLoading && <Spin />}
           />
         </div>
         <div className="w-1/2 text-right">
@@ -431,15 +480,53 @@ const StayInformation = ({
             htmlFor="totalPrice"
             className="block text-sm font-medium text-gray-700"
           >
-            Total Room Price/Night: ({totalPrice.toFixed(2)})
+            Total Room Price/Night: ({formState.totalPrice.toFixed(2)})
           </label>
           <Input
             id="totalPrice"
-            value={`${totalPrice.toFixed(2)}`}
+            value={`${formState.totalPrice.toFixed(2)}`}
             disabled
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
           />
         </div>
+      </div>
+
+      {formState.discountType && (
+        <div className="flex justify-between mt-4">
+          <div>
+            <table>
+              <tr>
+                <td>Discount Value:</td>
+                <td>{formState.discount}</td>
+              </tr>
+              <tr>
+                <td>Discount Type:</td>
+                <td>{formState.discountType}</td>
+              </tr>
+            </table>
+          </div>
+          <table>
+            <tr>
+              <td>Grand Total:</td>
+              <td>{formState.grandTotal}</td>
+            </tr>
+            <tr>
+              <td>Final Total:</td>
+              <td>{formState.totalPrice}</td>
+            </tr>
+          </table>
+          {formState.promotionError && (
+            <div style={{ color: "red" }}>{formState.promotionError}</div>
+          )}
+        </div>
+      )}
+      <div className="mt-4">
+        <label className="flex items-center space-x-2">
+          <Checkbox checked={formState.isAddTax} onChange={addTax} />
+          <span className="ml-2 text-sm font-medium text-gray-700">
+            Include Tax
+          </span>
+        </label>
       </div>
     </div>
   );

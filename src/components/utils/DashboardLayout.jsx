@@ -1,24 +1,24 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext"; // Access AuthContext
+import { useSession } from "../../hooks/useSession";
 import TopNav from "./TopNav";
 import SideNav from "./SideNav";
 import publicRoutes from "./publicRoute";
 
 const DashboardLayout = ({ children }) => {
   const navigate = useNavigate();
-  const { state } = useAuth(); // Auth state: { user, token, isLoading }
+  const { session } = useSession(); // Auth session: { user, token, isLoading }
   const isPublicRoute = publicRoutes.includes(window.location.pathname); // Check if the route is public
 
   // Redirect to login if user is not authenticated and not on a public route
   useEffect(() => {
-    if (!state.isLoading && !state.token && !isPublicRoute) {
+    if (!session.isLoading && !session.token && !isPublicRoute) {
       navigate("/"); // Redirect to login
     }
-  }, [state.token, state.isLoading, navigate, isPublicRoute]);
+  }, [session.token, session.isLoading, navigate, isPublicRoute]);
 
   // Determine user role
-  const userRole = state.user?.role;
+  const userRole = session.user?.role;
   const isApplicant = userRole === "applicant";
 
   // State for the side navigation
@@ -45,7 +45,7 @@ const DashboardLayout = ({ children }) => {
   }, [isSideNavOpen]);
 
   // Show loading state while session is being initialized
-  if (state.isLoading) {
+  if (session.isLoading) {
     return <div>Loading...</div>; // Customize your loading spinner or component
   }
 

@@ -1,24 +1,70 @@
 "use client";
-import { useState } from "react";
-import { Form, Button, Tabs, Card } from "antd";
+import { useState, useEffect } from "react";
+import { Button, Tabs, Card, message } from "antd";
+import { useSession } from "@/hooks/useSession";
 import OtherInformation from "./formFields/OtherInformation";
 import BillingInformation from "./formFields/BillingInformation";
 import PrintOptions from "./formFields/PrintOptions";
-import GuestInformation from "./formFields/GuestInformation";
+// import GuestInformation from "./formFields/GuestInformation";
+import GuestInformation from "./formFields/GuestForm";
 import StayInformation from "./formFields/StayInformation";
 
-export const ReservationForm = ({ startDate, endDate, roomName, onChange }) => {
-  const [form] = Form.useForm();
+export const ReservationForm = ({ startDate, endDate, roomName }) => {
+  const { session } = useSession();
+  const token = session?.token;
+  const hotelId = session?.user?.hotelId;
+  const [form] = useState({}); // Placeholder to match the original code structure
 
   const [formData, setFormData] = useState({
-    checkIn: startDate,
-    checkOut: endDate,
-    nights: 0,
-    rooms: [],
+    stayInformation: {
+      checkIn: startDate,
+      checkOut: endDate,
+      roomName: roomName,
+      nights: 0,
+      rooms: [],
+    },
+    billing: {},
+    other: {},
+    printOptions: {},
+    guests: [],
   });
 
-  const handleFormDataChange = (data) => {
-    setFormData(data);
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const startDate = urlParams.get("startDate") || "";
+    const endDate = urlParams.get("endDate") || "";
+    const roomName = urlParams.get("roomName") || "";
+
+    setFormData((prev) => ({
+      ...prev,
+      stayInformation: {
+        ...prev.stayInformation,
+        startDate,
+        endDate,
+        rooms: prev.stayInformation.rooms.map((room) => ({
+          ...room,
+          roomName,
+        })),
+      },
+    }));
+  }, []);
+
+  const handleFormChange = (updatedFormData) => {
+    setFormData((prev) => ({
+      ...prev,
+      stayInformation: {
+        ...prev.stayInformation,
+        ...updatedFormData.stayInformation,
+      },
+      guests: updatedFormData.guests || prev.guests,
+    }));
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    // Perform form submission logic here
+    console.log("Form submitted with values: ", formData);
+    message.success("Reservation successfully submitted!");
   };
 
   const tabItems = [
@@ -35,7 +81,8 @@ export const ReservationForm = ({ startDate, endDate, roomName, onChange }) => {
   ];
 
   return (
-    <form>
+    // <form form={form} onSubmit={handleSubmit}>
+    <div>
       <Card>
         <h3 className="text-2xl border-b">Walk In / Reservation</h3>
 
@@ -43,16 +90,12 @@ export const ReservationForm = ({ startDate, endDate, roomName, onChange }) => {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
             {/* Column 1: Takes up full width on small screens, 9 out of 12 parts on large screens */}
             <div className="col-span-1 lg:col-span-9 rounded-md">
-              <div>
-                <StayInformation
-                  onFormDataChange={handleFormDataChange}
-                  startDate={startDate}
-                  endDate={endDate}
-                  roomName={roomName}
-                />
-                <hr />
-                <GuestInformation onChange={onChange} />
-              </div>
+              <StayInformation
+                data={{ ...formData.stayInformation, token, hotelId }}
+                onChange={handleFormChange}
+              />
+              <hr />
+              <GuestInformation onChange={handleFormChange} />
             </div>
 
             {/* Column 2: Takes up full width on small screens, 3 out of 12 parts on large screens */}
@@ -71,7 +114,7 @@ export const ReservationForm = ({ startDate, endDate, roomName, onChange }) => {
         </div>
       </Card>
       <Card>
-        <PrintOptions form={form} />
+        <PrintOptions onChange={handleFormChange} />
 
         <div
           style={{
@@ -80,17 +123,17 @@ export const ReservationForm = ({ startDate, endDate, roomName, onChange }) => {
             marginTop: 16,
           }}
         >
-          <Button htmlType="button">Cancel</Button>
           <Button
             type="primary"
             className="bg-appBlue hover:bg-appBlueLight"
             size="lg"
-            htmlType="submit"
+            onClick={handleSubmit}
           >
             Reserve
           </Button>
         </div>
       </Card>
-    </form>
+    </div>
+    // </form>
   );
 };

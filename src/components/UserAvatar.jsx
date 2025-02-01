@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { FiLogOut } from "react-icons/fi"; // Assuming you have an AuthContext for managing auth
-import { useAuth } from "../context/AuthContext"; // Import AuthContext
+import { useSession } from "../hooks/useSession";
 
 export default function UserAvatar() {
-  const { logout } = useAuth(); // Destructure logout function from context
+  const { logout } = useSession(); // Destructure logout function from context
   const [user, setUser] = useState(null); // State to store user info
 
   // Fetch user from localStorage on component mount

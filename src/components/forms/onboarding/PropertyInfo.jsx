@@ -1,19 +1,19 @@
 import { useState, useEffect } from "react";
 import PhoneInput from "react-phone-input-2";
-import { useAuth } from "../../../context/AuthContext"; // Access AuthContext
+import { useSession } from "../../../hooks/useSession";
 
 import { CircleSpinnerOverlay } from "react-spinner-overlay";
 
 const PropertyInfo = ({ onChange }) => {
-  const { state } = useAuth();
-  const token = state.token;
-  const tenantId = state?.user?.tenantId;
+  const { session } = useSession();
+  const token = session.token;
+  const tenantId = session?.user?.tenantId;
 
   const [isLoading, setIsLoading] = useState(true);
   const [isMounted, setIsMounted] = useState(false);
   const [localFormData, setLocalFormData] = useState({});
   const [hasFetchedData, setHasFetchedData] = useState(false);
-  console.log("state", state);
+  console.log("show session record", session);
   useEffect(() => {
     setIsMounted(true);
 

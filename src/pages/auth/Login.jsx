@@ -1,100 +1,70 @@
 import { useState, useEffect } from "react";
-import { useAuth } from "../../context/AuthContext"; // Adjust the path as needed
-import { useNavigate, Link } from "react-router-dom"; // Use Link from React Router
-import { Spin } from "antd"; // Ant Design components
-import { Button } from "../../components/ui/button";
-
+import { Link, useNavigate } from "react-router-dom";
+import { useSession } from "../../hooks/useSession";
 import {
   LockOutlined,
   EyeOutlined,
   EyeInvisibleOutlined,
 } from "@ant-design/icons";
+import { Button } from "../../components/ui/button";
+import { Spin } from "antd"; // Import Spin for loading spinner
 import AuthAside from "../../components/AuthAside"; // Adjust the path based on your folder structure
 import Logo from "../../components/Logo"; // Adjust the path based on your folder structure
 import { Checkbox } from "../../components/ui/Checkbox"; // Adjust paths as needed
 import { Input } from "../../components/ui/Input";
 import { Label } from "../../components/ui/Label";
 
-export default function Login() {
-  const navigate = useNavigate();
-  const { dispatch } = useAuth(); // Access the dispatch function
+export default function LoginPage() {
+  const [message, setMessage] = useState(""); // State for messages
   const [email, setEmail] = useState("sakinropo@gmail.com");
   const [password, setPassword] = useState("Test@123");
-  const [error, setError] = useState(null);
+  const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
+  // const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false); // State to track processing status
+  const [rememberMe, setRememberMe] = useState(false);
+  const { login } = useSession();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  useEffect(() => {
-    const message = localStorage.getItem("message");
-    if (message === "timeout") {
-      setError("Session timed out due to inactivity.");
-      localStorage.removeItem("message");
-    } else if (message === "Verification Successful") {
-      setError("Verification Successful. Please login to get started.");
-      localStorage.removeItem("message");
+    // Retrieve the message from localStorage
+    const storedMessage = localStorage.getItem("message");
+    if (storedMessage) {
+      setMessage(storedMessage);
+      localStorage.removeItem("message"); // Clear the message after showing it
     }
   }, []);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleLogin = async (e) => {
     setLoading(true);
+    e.preventDefault();
+    setIsProcessing(true);
 
-    try {
-      const result = await authenticateUser(email, password);
+    const result = await login(email, password);
 
-      if (result?.statusCode === 200) {
-        const { token, user } = result;
+    setIsProcessing(false);
 
-        console.log("user", user);
-
-        if (user.onboardingStep < 4) {
-          navigate(`/onboarding?step=${user.onboardingStep}`);
+    if (result.success === true) {
+      const { data } = result;
+      const role = data.role;
+      if (role) {
+        // Store session in localStorage or sessionStorage based on rememberMe
+        if (rememberMe) {
+          localStorage.setItem("userSession", JSON.stringify(data));
         } else {
-          localStorage.setItem("token", token);
-          localStorage.setItem("user", JSON.stringify(user));
-
-          // Dispatch the LOGIN action to update global state
-          dispatch({ type: "LOGIN", payload: { token, user } });
-
-          navigate("/dashboard");
+          sessionStorage.setItem("userSession", JSON.stringify(data));
         }
-      } else {
-        setError(result.error || "Login failed");
+
+        navigate("/pms/dashboard");
       }
-    } catch (err) {
-      setError(err.message || "An unexpected error occurred");
-    } finally {
-      setLoading(false);
+    } else {
+      setMessage(result.message);
     }
   };
 
-  const authenticateUser = async (email, password) => {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/users/login`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email, password }),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(`Error: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      return data; // Assuming the returned data matches the structure you provided
-    } catch (err) {
-      return { error: err.message };
-    }
+  // Checkbox handler
+  const handleRememberMeChange = (e) => {
+    setRememberMe(e.target.checked);
   };
 
   const togglePasswordVisibility = () => {
@@ -102,112 +72,117 @@ export default function Login() {
   };
 
   return (
-    <div className="grid min-h-screen lg:grid-cols-12">
-      <AuthAside />
+    <>
+      <div className="grid min-h-screen lg:grid-cols-12">
+        <AuthAside />
 
-      <div className="flex items-center justify-center p-8 lg:col-span-8">
-        <div className="mx-auto w-full max-w-sm space-y-6">
-          <div className="space-y-2 text-center">
-            <Logo />
-            <h2 className="text-2xl font-semibold tracking-tight">Log in</h2>
-            <p className="text-sm text-muted-foreground">
-              Welcome back! Please enter your details.
-            </p>
-          </div>
-          <Spin spinning={!isMounted || loading}>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {error && (
-                <p
-                  className={`text-center mb-4 ${
-                    error ===
-                    "Verification Successful. Please login to get started."
-                      ? "text-green-500"
-                      : "text-red-500"
-                  }`}
-                >
-                  {error}
-                </p>
-              )}
-
-              <div className="space-y-2">
-                <Label className="text-muted-foreground" htmlFor="email">
-                  Email
-                  <LockOutlined className="text-red-600 ml-2" />
-                </Label>
-                <Input
-                  id="email"
-                  placeholder="Enter your email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  type="email"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-muted-foreground" htmlFor="password">
-                  Password
-                  <LockOutlined className="text-red-600 ml-2" />
-                </Label>
-                <div className="w-full flex items-center justify-between rounded-lg border py-2 px-4 bg-white border-gray-300 md:h-10 h-9">
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Enter Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="outline-none border-none w-full h-full placeholder:text-gray-400 text-sm text-gray-900 focus:ring-cyan-500"
+        <div className="flex items-center justify-center p-8 lg:col-span-8">
+          <div className="mx-auto w-full max-w-sm space-y-6">
+            <div className="space-y-2 text-center">
+              <Logo />
+              <h2 className="text-2xl font-semibold tracking-tight">Log in</h2>
+              <p className="text-sm text-muted-foreground">
+                Welcome back! Please enter your details.
+              </p>
+            </div>
+            <Spin spinning={isProcessing} size="small" className="mr-2">
+              <form onSubmit={handleLogin} className="space-y-4">
+                {message && (
+                  <p
+                    className={`text-center mb-4 ${
+                      message ===
+                      "Verification Successful. Please login to get started."
+                        ? "text-green-500"
+                        : "text-red-500"
+                    }`}
+                  >
+                    {message}
+                  </p>
+                )}
+                <div className="space-y-2">
+                  <Label className="text-muted-foreground" htmlFor="email">
+                    Email
+                    <LockOutlined className="text-red-600 ml-2" />
+                  </Label>
+                  <Input
+                    id="email"
+                    placeholder="Enter your email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    type="email"
                   />
-                  <button
-                    type="button"
-                    onClick={togglePasswordVisibility}
-                    className="text-gray-500 focus:outline-none"
-                  >
-                    {showPassword ? (
-                      <EyeInvisibleOutlined className="h-5 w-5 text-gray-500" />
-                    ) : (
-                      <EyeOutlined className="h-5 w-5 text-gray-500" />
-                    )}
-                  </button>
                 </div>
-              </div>
+                <div className="space-y-2">
+                  <Label className="text-muted-foreground" htmlFor="password">
+                    Password
+                    <LockOutlined className="text-red-600 ml-2" />
+                  </Label>
+                  <div className="w-full flex items-center justify-between rounded-lg border py-2 px-4 bg-white border-gray-300 md:h-10 h-9">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Enter Password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="outline-none border-none w-full h-full placeholder:text-gray-400 text-sm text-gray-900 focus:ring-cyan-500"
+                    />
+                    <button
+                      type="button"
+                      onClick={togglePasswordVisibility}
+                      className="text-gray-500 focus:outline-none"
+                    >
+                      {showPassword ? (
+                        <EyeInvisibleOutlined className="h-5 w-5 text-gray-500" />
+                      ) : (
+                        <EyeOutlined className="h-5 w-5 text-gray-500" />
+                      )}
+                    </button>
+                  </div>
+                </div>
 
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <Checkbox id="remember" />
-                  <label
-                    className="text-sm text-muted-foreground"
-                    htmlFor="remember"
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="remember"
+                      checked={rememberMe}
+                      onChange={handleRememberMeChange}
+                    />
+                    <label
+                      className="text-sm text-muted-foreground"
+                      htmlFor="remember"
+                    >
+                      Remember for 30 days
+                    </label>
+                  </div>
+                  <Link
+                    to="/forgot-password"
+                    className="text-sm text-muted-foreground hover:underline"
                   >
-                    Remember for 30 days
-                  </label>
+                    Forgot password
+                  </Link>
                 </div>
-                <Link
-                  to="/forgot-password"
-                  className="text-sm text-muted-foreground hover:underline"
+                <Button
+                  type="submit"
+                  className="w-full"
+                  size="lg"
+                  loading={loading}
                 >
-                  Forgot password
-                </Link>
-              </div>
-              <Button
-                type="submit"
-                className="w-full"
-                size="lg"
-                loading={loading}
-              >
-                Login
-              </Button>
-              <div className="text-center">
-                <Link
-                  to="/auth/register"
-                  className="text-sm text-muted-foreground hover:underline"
-                >
-                  {`Don't have an account? `}
-                  <span className="text-orange-500">Register</span>
-                </Link>
-              </div>
-            </form>
-          </Spin>
+                  Login
+                </Button>
+                <div className="text-center">
+                  <Link
+                    to="/auth/register"
+                    className="text-sm text-muted-foreground hover:underline"
+                  >
+                    {`Don't have an account? `}
+                    <span className="text-orange-500">Register</span>
+                  </Link>
+                </div>
+              </form>
+            </Spin>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

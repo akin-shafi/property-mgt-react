@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
-import { useAuth } from "../../../context/AuthContext"; // Access AuthContext
+import { useSession } from "../../../hooks/useSession";
+
 // import { useSessionContext } from "@/context/SessionContext";
 import { CircleSpinnerOverlay } from "react-spinner-overlay";
 import { fetchHotelDetailsByTenantId } from "../../../hooks/useAction";
 
 const PropertyDetails = ({ onChange }) => {
-  const { state } = useAuth();
-  const token = state.token;
-  const tenantId = state?.user?.tenantId;
+  const { session } = useSession();
+  const token = session.token;
+  const tenantId = session?.user?.tenantId;
 
   const [isLoading, setIsLoading] = useState(true);
   const [isMounted, setIsMounted] = useState(false);

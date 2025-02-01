@@ -1,4 +1,5 @@
 // "@/hooks/useReservation"
+const API_BASE_URL = import.meta.env.VITE_BASE_URL;
 
 export const metrics = [
   { label: "Arrivals", value: 26, key: "arrivals" },
@@ -84,6 +85,8 @@ export const hotelBookings = async (hotelId, token) => {
       }
     );
 
+    // console.log("Reservation response:", response);
+
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData.message || "Failed to fetch room setup data.");
@@ -98,14 +101,23 @@ export const hotelBookings = async (hotelId, token) => {
         barBackColor: "#fff",
       }; // Default colors if no match
 
-      return {
+      // console.log("Reservation 1:", reservation);
+      const displyData = {
         id: parseInt(reservation.id),
-        text: `${reservation.name} - ${reservation.room} Room`,
+        text: `${reservation.name} - ${reservation.rooms
+          .map((room) => room.roomName)
+          .join(", ")} Room(s)`,
+        // text: `${reservation.name} - ${reservation.room} Room`,
         start: formatDateForEvent(reservation.dates.split(" - ")[0]), // Start date
         end: formatDateForEvent(reservation.dates.split(" - ")[1]), // End date
-        resource: reservation.room,
+        resource: `${reservation.rooms
+          .map((room) => room.roomName)
+          .join(", ")}`,
         ...colors, // Spread the color properties
       };
+      // console.log("Reservation 2:", displyData);
+
+      return displyData;
     });
 
     // Ensure that data is always an array
@@ -135,5 +147,53 @@ export const fetchhotelRooms = async (hotelId, token) => {
     return Array.isArray(data) ? data : [];
   } catch (error) {
     throw new Error(error.message || "Error fetching room types.");
+  }
+};
+
+export const createReservation = async (data, token) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/reservations`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || "Failed to create reservation");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error creating reservation:", error);
+    throw error;
+  }
+};
+
+export const fetchReservationById = async (reservationId, token) => {
+  try {
+    const response = await fetch(
+      `${
+        import.meta.env.VITE_BASE_URL
+      }/api/reservations/by-id/${reservationId}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to fetch reservation data.");
+    }
+
+    const data = await response.json();
+
+    // Ensure that data is returned as an object
+    return data;
+  } catch (error) {
+    throw new Error(error.message || "Error fetching reservation data.");
   }
 };

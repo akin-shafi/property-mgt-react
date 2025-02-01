@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext"; // Access AuthContext
-import ReservationLayout from "../../components/utils/ReservationLayout";
+import { useSession } from "../../hooks/useSession";
+
+import Layout from "../../components/utils/Layout";
 import { DayPilotScheduler } from "daypilot-pro-react"; // DayPilot Scheduler
 import { getSchedulerConfig } from "../../hooks/SchedulerConfig";
 import { hotelBookings } from "../../hooks/useReservation";
@@ -12,9 +13,9 @@ import ViewDetailsModal from "../../components/modals/ViewDetailsModal";
 import EditReservationModal from "../../components/modals/EditReservationModal";
 
 const Scheduler = () => {
-  const { state } = useAuth();
-  const token = state.token;
-  const hotelId = state?.user?.hotelId;
+  const { session } = useSession();
+  const token = session.token;
+  const hotelId = session?.user?.hotelId;
   const [hotelRooms, setHotelRooms] = useState([]);
   const [hotelReservations, setHotelReservations] = useState([]);
   const [scheduler, setScheduler] = useState(null);
@@ -38,6 +39,7 @@ const Scheduler = () => {
 
       try {
         const hotelData = await fetchHotelRoomsWithPrice(hotelId, token);
+        // console.log("hotelData:--", hotelData);
         const formattedRooms = hotelData.map((room) => ({
           id: room.roomName,
           name: `Room ${room.roomName}`,
@@ -67,6 +69,7 @@ const Scheduler = () => {
 
       try {
         const reservationData = await hotelBookings(hotelId, token);
+        console.log("reservationData today", reservationData);
         setHotelReservations(reservationData);
       } catch (err) {
         setError(err.message || "Failed to fetch reservation data.");
@@ -105,9 +108,9 @@ const Scheduler = () => {
   );
 
   return (
-    <ReservationLayout>
+    <Layout>
       <Spin spinning={loading}>
-        <main className="mt-10">
+        <main className="mt-10 px-4">
           {error && <div className="text-red-500">{error}</div>}
           <DayPilotScheduler
             {...config}
@@ -134,7 +137,7 @@ const Scheduler = () => {
         onCancel={() => setEditReservationVisible(false)}
         resourceId={selectedResourceId} // Pass the selected resourceId to modal
       />
-    </ReservationLayout>
+    </Layout>
   );
 };
 

@@ -66,7 +66,14 @@ export function SideNav() {
                 <SidebarMenuItem>
                   <SidebarMenuButton className={getLinkClass("/front-office")}>
                     <Building2 className="h-4 w-4 mr-2" />
-                    <a href="/front-office">Front-office</a>
+                    <a href="/front-office">Stay view</a>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton className={getLinkClass("/rooms")}>
+                    <RoomIcon />
+
+                    <a href="/rooms">Room view</a>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
@@ -80,13 +87,6 @@ export function SideNav() {
                   <SidebarMenuButton className={getLinkClass("/reservations")}>
                     <CalendarDays className="h-4 w-4 mr-2" />
                     <a href="/reservations">Reservations</a>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-                <SidebarMenuItem>
-                  <SidebarMenuButton className={getLinkClass("/rooms")}>
-                    <RoomIcon />
-
-                    <a href="/rooms">Rooms</a>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               </SidebarMenu>

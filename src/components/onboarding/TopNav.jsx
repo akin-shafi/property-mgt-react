@@ -1,12 +1,12 @@
-import { useAuth } from "../../context/AuthContext"; // Access AuthContext
+import { useSession } from "../../hooks/useSession";
 import { useNavigate } from "react-router-dom";
 import { OpenSideNav } from "../Icon";
 
 export default function OnboardingTopNav({ onMenuClick }) {
-  const { state, logout } = useAuth();
+  const { session, logout } = useSession();
   const navigate = useNavigate();
 
-  const profilePic = state.profilePic; // Uncommented this line
+  const profilePic = session.profilePic; // Uncommented this line
 
   const handleLogout = async () => {
     logout();

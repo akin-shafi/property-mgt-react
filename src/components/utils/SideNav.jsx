@@ -30,7 +30,7 @@ const SideNav = forwardRef(({ isOpen, onClose, isApplicant }, ref) => {
       : "fill-[#fff] group-hover:fill-secondary";
   };
 
-  return (
+  return ( 
     <aside
       ref={ref}
       className={`fixed top-0 left-0 h-full w-64 bg-[#032541] text-white transition-transform transform ${
@@ -84,7 +84,7 @@ const SideNav = forwardRef(({ isOpen, onClose, isApplicant }, ref) => {
 
               <Link to="/frontoffice" className={getLinkClass("/frontoffice")}>
                 <NewCandidateIcon className={getIconClass("/frontoffice")} />
-                <span className="mt-1">Front Office</span>
+                <span className="mt-1">Stay view</span>
               </Link>
 
               <Link to="/reservation" className={getLinkClass("/reservation")}>

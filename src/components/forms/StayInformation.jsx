@@ -59,7 +59,7 @@ const StayInformation = ({ onFormDataChange }) => {
   };
 
   return (
-    <div className="p-6 bg-gray-100 rounded-md max-w-4xl mx-auto">
+    <div className="p-6 w-full bg-gray-100 col-span-1 lg:col-span-9 rounded-md mb-4">
       {/* Check-in and Check-out */}
       <div className="flex items-center space-x-4 mb-4">
         <div className="w-1/3">

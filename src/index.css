@@ -243,3 +243,101 @@ body {
 }
 
 
+
+.custom-card {
+  width: 150px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.custom-card-header {
+  /* background-color: #4CAF50;  */
+  color: #000;
+  padding: 8px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.custom-card-number {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.custom-card-icons {
+  display: flex;
+  gap: 4px;
+}
+
+.custom-icon-lightning {
+  font-size: 14px;
+}
+
+.custom-icon-sparkles {
+  font-size: 14px;
+}
+
+.custom-card-footer {
+  padding: 12px;
+  font-size: 16px;
+  text-align: center;
+  color: #333;
+}
+
+
+/* DailyForecastReport.css */
+
+.small-font-table .ant-table-thead > tr > th,
+.small-font-table .ant-table-tbody > tr > td {
+  font-size: 12px; /* Adjust the font size as needed */
+}
+
+.small-font-table .ant-table-pagination {
+  font-size: 12px; /* Adjust the font size of pagination as needed */
+}
+
+.compact-table .ant-table-thead > tr > th,
+.compact-table .ant-table-tbody > tr > td {
+  padding: 8px; /* Reduce padding for compact table */
+}
+
+.compact-table .ant-table {
+  font-size: 12px; /* Additional font size adjustment */
+}
+
+/* styles.css */
+
+.small-font {
+  font-size: 12px;
+}
+
+.table-small-font .ant-table-cell {
+  font-size: 12px;
+}
+
+.modal-small-font .ant-modal-body {
+  font-size: 12px;
+}
+
+.modal-small-font .ant-modal-title {
+  font-size: 14px;
+}
+
+
+
+@media (max-width: 600px) {
+  .compact-table .ant-table {
+    font-size: 10px; /* Further reduce font size for small screens */
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 16px;
+  }
+  .main-content {
+    margin-left: 16px;
+  }
+}

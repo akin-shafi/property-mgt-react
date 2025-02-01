@@ -1,12 +1,12 @@
-import ReservationLayout from "../../components/utils/ReservationLayout";
+import Layout from "../../components/utils/Layout";
 import { ReservationForm } from "../../components/forms/reservation-form";
 
 export default function ReservationPage() {
   return (
-    <ReservationLayout>
+    <Layout>
       <div className="py-1">
         <ReservationForm />
       </div>
-    </ReservationLayout>
+    </Layout>
   );
 }

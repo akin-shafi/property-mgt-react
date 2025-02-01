@@ -34,7 +34,7 @@ const GuestForm = () => {
           className="bg-gray-100 p-4 rounded-lg shadow-md space-y-2 relative"
         >
           <h3 className="text-lg font-medium">Guest {index + 1}</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-2">
             <div>
               <label className="block font-medium mb-1">Guest Name</label>
               <div className="flex items-center space-x-1">

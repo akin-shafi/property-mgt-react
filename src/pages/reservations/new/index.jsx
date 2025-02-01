@@ -1,5 +1,6 @@
 "use client";
-import ReservationLayout from "../../../components/utils/ReservationLayout";
+// import ReservationLayout from "../../../components/utils/ReservationLayout";
+import Layout from "../../../components/utils/Layout";
 import { ReservationForm } from "./reservation-form";
 import { useSearchParams } from "react-router-dom";
 
@@ -12,7 +13,7 @@ export default function ReservationPage() {
 
   // If startDate and endDate exist, pass them as props to ReservationForm
   return (
-    <ReservationLayout>
+    <Layout>
       <div className="py-1">
         <ReservationForm
           startDate={startDate ? new Date(startDate) : null}
@@ -20,6 +21,6 @@ export default function ReservationPage() {
           roomName={roomName}
         />
       </div>
-    </ReservationLayout>
+    </Layout>
   );
 }

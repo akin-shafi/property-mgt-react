@@ -1,12 +1,20 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
-import { useState } from "react";
-const PrintOptions = () => {
+import { useState, useEffect } from "react";
+
+const PrintOptions = ({ onChange }) => {
   const [options, setOptions] = useState({
     printGuestCard: false,
-    suppressRate: false,
+    // suppressRate: false,
     printFolio: false,
-    printReceipt: false,
+    printReceipt: true,
   });
+
+  useEffect(() => {
+    if (onChange) {
+      onChange("printOptions", options);
+    }
+  }, [options]);
 
   const handleChange = (event) => {
     const { name, checked } = event.target;
@@ -14,56 +22,29 @@ const PrintOptions = () => {
   };
 
   return (
-    // <div className="grid grid-cols-1 gap-4 md:grid-cols-2 w-[70%]">
     <div className="flex justify-between w-[70%]">
-      <div>
-        <label className="flex items-center space-x-2">
-          <input
-            type="checkbox"
-            name="printGuestCard"
-            checked={options.printGuestCard}
-            onChange={handleChange}
-            className="accent-appOrange rounded border-gray-300 text-blue-600 shadow-sm focus:ring focus:ring-blue-300 focus:ring-opacity-50"
-          />
-          <span>Print Guest Registration Card</span>
-        </label>
-      </div>
-      <div>
-        <label className="flex items-center space-x-2">
-          <input
-            type="checkbox"
-            name="suppressRate"
-            checked={options.suppressRate}
-            onChange={handleChange}
-            className="accent-appOrange rounded border-gray-300 text-blue-600 shadow-sm focus:ring focus:ring-blue-300 focus:ring-opacity-50"
-          />
-          <span>Suppress Rate on Registration Card</span>
-        </label>
-      </div>
-      <div>
-        <label className="flex items-center space-x-2">
-          <input
-            type="checkbox"
-            name="printFolio"
-            checked={options.printFolio}
-            onChange={handleChange}
-            className="accent-appOrange rounded border-gray-300 text-blue-600 shadow-sm focus:ring focus:ring-blue-300 focus:ring-opacity-50"
-          />
-          <span>Print Folio</span>
-        </label>
-      </div>
-      <div>
-        <label className="flex items-center space-x-2">
-          <input
-            type="checkbox"
-            name="printReceipt"
-            checked={options.printReceipt}
-            onChange={handleChange}
-            className="accent-appOrange rounded border-gray-300 text-blue-600 shadow-sm focus:ring focus:ring-blue-300 focus:ring-opacity-50"
-          />
-          <span>Print Receipt</span>
-        </label>
-      </div>
+      {Object.keys(options).map((key) => (
+        <div key={key}>
+          <label className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              name={key}
+              checked={options[key]}
+              onChange={handleChange}
+              className="accent-appOrange rounded border-gray-300 text-blue-600 shadow-sm focus:ring focus:ring-blue-300 focus:ring-opacity-50"
+            />
+            <span>
+              {key === "printGuestCard"
+                ? "Print Guest Registration Card"
+                : // : key === "suppressRate"
+                // ? "Suppress Rate on Registration Card"
+                key === "printFolio"
+                ? "Print Folio"
+                : "Print Receipt"}
+            </span>
+          </label>
+        </div>
+      ))}
     </div>
   );
 };
