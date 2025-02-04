@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useSession } from "../../hooks/useSession";
 import {
-  LockOutlined,
+  // LockOutlined,
   EyeOutlined,
   EyeInvisibleOutlined,
 } from "@ant-design/icons";
@@ -10,19 +10,19 @@ import { Button } from "../../components/ui/button";
 import { Spin } from "antd"; // Import Spin for loading spinner
 import AuthAside from "../../components/AuthAside"; // Adjust the path based on your folder structure
 import Logo from "../../components/Logo"; // Adjust the path based on your folder structure
-import { Checkbox } from "../../components/ui/Checkbox"; // Adjust paths as needed
+// import { Checkbox } from "../../components/ui/Checkbox"; // Adjust paths as needed
 import { Input } from "../../components/ui/Input";
 import { Label } from "../../components/ui/Label";
 
 export default function LoginPage() {
   const [message, setMessage] = useState(""); // State for messages
-  const [email, setEmail] = useState("sakinropo@gmail.com");
+  const [username, setUsername] = useState("standford001"); // State for username
+  const [tenantId, setTenantId] = useState("adm-8B36D103"); // State for tenantId
   const [password, setPassword] = useState("Test@123");
   const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
-  // const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false); // State to track processing status
-  const [rememberMe, setRememberMe] = useState(false);
+  // const [rememberMe, setRememberMe] = useState(false);
   const { login } = useSession();
   const navigate = useNavigate();
 
@@ -40,7 +40,7 @@ export default function LoginPage() {
     e.preventDefault();
     setIsProcessing(true);
 
-    const result = await login(email, password);
+    const result = await login(username, password, tenantId);
 
     setIsProcessing(false);
 
@@ -49,12 +49,12 @@ export default function LoginPage() {
       const role = data.role;
       if (role) {
         // Store session in localStorage or sessionStorage based on rememberMe
-        if (rememberMe) {
-          localStorage.setItem("userSession", JSON.stringify(data));
-        } else {
-          sessionStorage.setItem("userSession", JSON.stringify(data));
-        }
-
+        // if (rememberMe) {
+        //   localStorage.setItem("userSession", JSON.stringify(data));
+        // } else {
+        //   sessionStorage.setItem("userSession", JSON.stringify(data));
+        // }
+        sessionStorage.setItem("userSession", JSON.stringify(data));
         navigate("/pms/dashboard");
       }
     } else {
@@ -63,9 +63,9 @@ export default function LoginPage() {
   };
 
   // Checkbox handler
-  const handleRememberMeChange = (e) => {
-    setRememberMe(e.target.checked);
-  };
+  // const handleRememberMeChange = (e) => {
+  //   setRememberMe(e.target.checked);
+  // };
 
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
@@ -74,16 +74,14 @@ export default function LoginPage() {
   return (
     <>
       <div className="grid min-h-screen lg:grid-cols-12">
-        <AuthAside />
-
-        <div className="flex items-center justify-center p-8 lg:col-span-8">
+        <div className="flex items-center justify-center p-8 lg:col-span-6">
           <div className="mx-auto w-full max-w-sm space-y-6">
             <div className="space-y-2 text-center">
               <Logo />
-              <h2 className="text-2xl font-semibold tracking-tight">Log in</h2>
-              <p className="text-sm text-muted-foreground">
+              <h2 className="text-2xl font-semibold tracking-tight">Login</h2>
+              {/* <p className="text-sm text-muted-foreground">
                 Welcome back! Please enter your details.
-              </p>
+              </p> */}
             </div>
             <Spin spinning={isProcessing} size="small" className="mr-2">
               <form onSubmit={handleLogin} className="space-y-4">
@@ -100,23 +98,21 @@ export default function LoginPage() {
                   </p>
                 )}
                 <div className="space-y-2">
-                  <Label className="text-muted-foreground" htmlFor="email">
-                    Email
-                    <LockOutlined className="text-red-600 ml-2" />
+                  <Label className="text-muted-foreground" htmlFor="username">
+                    Username
                   </Label>
                   <Input
-                    id="email"
-                    placeholder="Enter your email"
+                    id="username"
+                    placeholder="Enter your username"
                     required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    type="email"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
                   />
                 </div>
+
                 <div className="space-y-2">
                   <Label className="text-muted-foreground" htmlFor="password">
                     Password
-                    <LockOutlined className="text-red-600 ml-2" />
                   </Label>
                   <div className="w-full flex items-center justify-between rounded-lg border py-2 px-4 bg-white border-gray-300 md:h-10 h-9">
                     <input
@@ -140,8 +136,29 @@ export default function LoginPage() {
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
+                <div className="space-y-2">
+                  <Label className="text-muted-foreground" htmlFor="tenantId">
+                    Property Code
+                  </Label>
+                  <Input
+                    id="tenantId"
+                    placeholder="Enter your tenant ID"
+                    required
+                    value={tenantId}
+                    onChange={(e) => setTenantId(e.target.value)}
+                  />
+                </div>
+
+                <Button
+                  type="submit"
+                  className="w-full"
+                  size="lg"
+                  loading={loading}
+                >
+                  Login
+                </Button>
+                <div className="flex items-center justify-end">
+                  {/* <div className="flex items-center space-x-2">
                     <Checkbox
                       id="remember"
                       checked={rememberMe}
@@ -153,7 +170,7 @@ export default function LoginPage() {
                     >
                       Remember for 30 days
                     </label>
-                  </div>
+                  </div> */}
                   <Link
                     to="/forgot-password"
                     className="text-sm text-muted-foreground hover:underline"
@@ -161,14 +178,6 @@ export default function LoginPage() {
                     Forgot password
                   </Link>
                 </div>
-                <Button
-                  type="submit"
-                  className="w-full"
-                  size="lg"
-                  loading={loading}
-                >
-                  Login
-                </Button>
                 <div className="text-center">
                   <Link
                     to="/auth/register"
@@ -181,6 +190,9 @@ export default function LoginPage() {
               </form>
             </Spin>
           </div>
+        </div>
+        <div className="hidden lg:block bg-appBlue p-12 xl:p-20 text-white relative lg:col-span-6">
+          <AuthAside />
         </div>
       </div>
     </>

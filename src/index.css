@@ -325,6 +325,15 @@ body {
   font-size: 14px;
 }
 
+/* :where(.css-dev-only-do-not-override-49qm).ant-drawer .ant-drawer-close {
+  width: 0px !important;
+} */
+
+/* .scheduler_default_corner_inner {
+  display: none !important;
+} */
+
+.hidden, #demo-label{display: none !important;}
 
 
 @media (max-width: 600px) {

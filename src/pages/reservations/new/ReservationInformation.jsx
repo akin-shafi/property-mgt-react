@@ -71,7 +71,7 @@ const ReservationForm = () => {
         },
       }));
     } else if (section === "rooms") {
-      console.log("section rooms", value);
+      // console.log("section rooms", value);
       const totalPrice = value.reduce(
         (acc, room) =>
           acc + room.roomPrice * formData.reservationDetails.numberOfNights,
@@ -93,28 +93,9 @@ const ReservationForm = () => {
     }
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    // Perform form submission logic here
-    if (validateReservationForm(formData)) {
-      const payload = {
-        guestDetails: formData.guestDetails,
-        reservationDetails: formData.reservationDetails,
-        billingDetails: formData.billingDetails,
-        createdBy: userId,
-        role: role,
-      };
-      try {
-        console.log(payload);
-        message.success("Reservation successfully submitted!");
-      } catch (error) {
-        message.error(error, "Failed to submit reservation!");
-      }
-    }
-  };
-
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
+  // const handleSubmit = async (event) => {
+  //   event.preventDefault();
+  //   // Perform form submission logic here
   //   if (validateReservationForm(formData)) {
   //     const payload = {
   //       guestDetails: formData.guestDetails,
@@ -122,27 +103,46 @@ const ReservationForm = () => {
   //       billingDetails: formData.billingDetails,
   //       createdBy: userId,
   //       role: role,
-  //       // printOptions: formData.printOptions,
   //     };
-
   //     try {
-  //       const response = await createReservation(payload, token);
-  //       if (response.statusCode === 200) {
-  //         message.success("Reservation successfully submitted!");
-  //         if (formData.printOptions.printReceipt) {
-  //           setIsReceiptVisible(true);
-  //         }
-  //       } else {
-  //         message.error(
-  //           `Error: ${response.message || "Failed to create reservation"}`
-  //         );
-  //       }
+  //       console.log(payload);
+  //       message.success("Reservation successfully submitted!");
   //     } catch (error) {
-  //       console.error("Error submitting reservation:", error);
-  //       message.error("Error submitting reservation. Please try again.");
+  //       message.error(error, "Failed to submit reservation!");
   //     }
   //   }
   // };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (validateReservationForm(formData)) {
+      const payload = {
+        guestDetails: formData.guestDetails,
+        reservationDetails: formData.reservationDetails,
+        billingDetails: formData.billingDetails,
+        createdBy: userId,
+        role: role,
+        // printOptions: formData.printOptions,
+      };
+
+      try {
+        const response = await createReservation(payload, token);
+        if (response.statusCode === 200) {
+          message.success("Reservation successfully submitted!");
+          if (formData.printOptions.printReceipt) {
+            setIsReceiptVisible(true);
+          }
+        } else {
+          message.error(
+            `Error: ${response.message || "Failed to create reservation"}`
+          );
+        }
+      } catch (error) {
+        console.error("Error submitting reservation:", error);
+        message.error("Error submitting reservation. Please try again.");
+      }
+    }
+  };
 
   const tabItems = [
     {

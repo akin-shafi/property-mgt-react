@@ -3,7 +3,7 @@ import { Star } from "lucide-react";
 export default function AuthAside() {
   return (
     // hidden lg:block bg-appBlue p-12 xl:p-20 text-white relative lg:col-span-4
-    <aside className="hidden lg:block bg-appBlue p-12 xl:p-20 text-white relative lg:col-span-4">
+    <aside className="">
       <div className="absolute top-0 left-0 w-32 h-32 bg-white/10 rounded-br-full" />
       <div className="relative z-20">
         <div className="mb-12">

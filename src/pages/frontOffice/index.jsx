@@ -1,16 +1,18 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSession } from "../../hooks/useSession";
+import { useSession } from "@/hooks/useSession";
 
-import Layout from "../../components/utils/Layout";
+import Layout from "@/components/utils/Layout";
 import { DayPilotScheduler } from "daypilot-pro-react"; // DayPilot Scheduler
-import { getSchedulerConfig } from "../../hooks/SchedulerConfig";
-import { hotelBookings } from "../../hooks/useReservation";
-import { fetchHotelRoomsWithPrice } from "../../hooks/useAction";
+import { getSchedulerConfig } from "@/hooks/SchedulerConfig";
+import { hotelBookings } from "@/hooks/useReservation";
+import { fetchHotelRoomsWithPrice } from "@/hooks/useAction";
 import { Spin } from "antd";
-import ViewPaymentModal from "../../components/modals/ViewPaymentModal";
-import ViewDetailsModal from "../../components/modals/ViewDetailsModal";
-import EditReservationModal from "../../components/modals/EditReservationModal";
+import ViewPaymentModal from "@/components/modals/ViewPaymentModal";
+import ModalDrawer from "@/components/modals/ModalDrawer";
+
+// import ViewDetailsModal from "@/components/modals/ViewDetailsModal";
+// import EditReservationModal from "@/components/modals/EditReservationModal";
 
 const Scheduler = () => {
   const { session } = useSession();
@@ -25,10 +27,12 @@ const Scheduler = () => {
   const [error, setError] = useState(null);
   const [isViewPaymentModalVisible, setViewPaymentModalVisible] =
     useState(false); // Modal state
-  const [isEditReservationVisible, setEditReservationVisible] = useState(false); // Modal state
-  const [isViewDetailsModalVisible, setViewDetailsModalVisible] =
-    useState(false); // Example modal state
+  // const [isEditReservationVisible, setEditReservationVisible] = useState(false); // Modal state
+  // const [isViewDetailsModalVisible, setViewDetailsModalVisible] =
+  //   useState(false); // Example modal state
   const [selectedResourceId, setSelectedResourceId] = useState(null); // Store resourceId
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
   const navigate = useNavigate();
 
   // Fetch and format room data
@@ -102,10 +106,14 @@ const Scheduler = () => {
     resources,
     navigate,
     setViewPaymentModalVisible, // Pass the modal state handler
-    setViewDetailsModalVisible, // Example modal state handler
-    setEditReservationVisible,
+    // setViewDetailsModalVisible,
+    // setEditReservationVisible,
     setSelectedResourceId // Pass the setSelectedResourceId function to update the resourceId
   );
+
+  const toggleDrawer = () => {
+    setDrawerOpen((prev) => !prev);
+  };
 
   return (
     <Layout>
@@ -126,8 +134,15 @@ const Scheduler = () => {
         visible={isViewPaymentModalVisible}
         onCancel={() => setViewPaymentModalVisible(false)}
         resourceId={selectedResourceId} // Pass the selected resourceId to modal
+        token={token}
       />
-      <ViewDetailsModal
+
+      <ModalDrawer
+        open={drawerOpen}
+        onClose={toggleDrawer}
+        resourceId={selectedResourceId}
+      />
+      {/* <ViewDetailsModal
         visible={isViewDetailsModalVisible}
         onCancel={() => setViewDetailsModalVisible(false)}
         resourceId={selectedResourceId} // Pass the selected resourceId to modal
@@ -136,7 +151,7 @@ const Scheduler = () => {
         visible={isEditReservationVisible}
         onCancel={() => setEditReservationVisible(false)}
         resourceId={selectedResourceId} // Pass the selected resourceId to modal
-      />
+      /> */}
     </Layout>
   );
 };

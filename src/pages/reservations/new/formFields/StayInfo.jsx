@@ -63,7 +63,6 @@ const StayInformation = ({ data, onChange }) => {
               roomPrice: matchingRoom.price,
             };
             setRooms([initialRoomData]);
-            // console.log("initialRoomData", initialRoomData);
             onChange("rooms", [initialRoomData]);
           } else {
             setRooms([initialRoom]);
@@ -96,7 +95,6 @@ const StayInformation = ({ data, onChange }) => {
       i === index ? { ...room, [field]: value } : room
     );
 
-    console.log("updatedRooms", index, field, value);
     setRooms(updatedRooms);
     onChange("rooms", updatedRooms);
   };
@@ -106,14 +104,14 @@ const StayInformation = ({ data, onChange }) => {
       if (i === index) {
         return {
           ...room,
-          // roomId: value,
-          // roomName: option.roomName,
-          // roomPrice: option.price,
+          roomId: value,
+          roomName: option.roomName,
+          roomPrice: option.price,
         };
       }
       return room;
     });
-    console.log("handleRoomChange", updatedRooms);
+
     setRooms(updatedRooms);
     onChange("rooms", updatedRooms);
   };
@@ -272,7 +270,7 @@ const StayInformation = ({ data, onChange }) => {
               />
 
               <input
-                type="number"
+                type="hidden"
                 value={room.roomPrice}
                 onChange={(e) =>
                   handleChange(index, "roomPrice", room.roomPrice)

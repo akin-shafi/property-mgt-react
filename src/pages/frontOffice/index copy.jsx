@@ -1,17 +1,19 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext"; // Access AuthContext
-import ReservationLayout from "../../components/utils/ReservationLayout";
-import { DayPilotScheduler } from "daypilot-pro-react"; // DayPilot Scheduler
-import { getSchedulerConfig } from "../../hooks/SchedulerConfig";
-import { hotelBookings } from "../../hooks/useReservation";
-import { fetchHotelRoomsWithPrice } from "../../hooks/useAction";
+import { useSession } from "@/hooks/useSession";
 
+import Layout from "@/components/utils/Layout";
+import { DayPilotScheduler } from "daypilot-pro-react"; // DayPilot Scheduler
+import { getSchedulerConfig } from "@/hooks/SchedulerConfig";
+import { hotelBookings } from "@/hooks/useReservation";
+import { fetchHotelRoomsWithPrice } from "@/hooks/useAction";
 import { Spin } from "antd";
+import ModalDrawer from "@/components/modals/ModalDrawer";
+
 const Scheduler = () => {
-  const { state } = useAuth();
-  const token = state.token;
-  const hotelId = state?.user?.hotelId;
+  const { session } = useSession();
+  const token = session.token;
+  const hotelId = session?.user?.hotelId;
   const [hotelRooms, setHotelRooms] = useState([]);
   const [hotelReservations, setHotelReservations] = useState([]);
   const [scheduler, setScheduler] = useState(null);
@@ -19,49 +21,11 @@ const Scheduler = () => {
   const [resources, setResources] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [selectedResourceId, setSelectedResourceId] = useState(null);
+
   const navigate = useNavigate();
 
-  // Fetch and format room data
-  // useEffect(() => {
-  //   const fetchRoomData = async () => {
-  //     setLoading(true);
-  //     setError(null);
-
-  //     try {
-  //       const hotelData = await fetchhotelRooms(hotelId, token);
-  //       const groupedRooms = hotelData.reduce((acc, room) => {
-  //         const { roomType } = room;
-  //         if (!acc[roomType]) {
-  //           acc[roomType] = [];
-  //         }
-  //         acc[roomType].push({
-  //           name: `Room ${room.roomName}`,
-  //           id: room.roomName,
-  //         });
-  //         return acc;
-  //       }, {});
-
-  //       const formattedRooms = Object.entries(groupedRooms).map(
-  //         ([roomType, rooms]) => ({
-  //           name: roomType,
-  //           id: roomType,
-  //           expanded: true,
-  //           children: rooms,
-  //         })
-  //       );
-
-  //       setHotelRooms(formattedRooms);
-  //     } catch (err) {
-  //       setError(err.message || "Failed to fetch room data.");
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   if (hotelId && token) {
-  //     fetchRoomData();
-  //   }
-  // }, [hotelId, token]);
   useEffect(() => {
     const fetchRoomData = async () => {
       setLoading(true);
@@ -69,15 +33,12 @@ const Scheduler = () => {
 
       try {
         const hotelData = await fetchHotelRoomsWithPrice(hotelId, token);
-
-        // console.log("Rooms:", hotelData);
-        // Format the rooms without grouping by roomType
         const formattedRooms = hotelData.map((room) => ({
           id: room.roomName,
           name: `Room ${room.roomName}`,
           status: room.maintenanceStatus,
           capacity: room.capacity,
-          avalability: room.isAvailable,
+          availability: room.isAvailable,
         }));
 
         setHotelRooms(formattedRooms);
@@ -93,7 +54,6 @@ const Scheduler = () => {
     }
   }, [hotelId, token]);
 
-  // Fetch and format reservation data
   useEffect(() => {
     const fetchReservationData = async () => {
       setLoading(true);
@@ -114,12 +74,10 @@ const Scheduler = () => {
     }
   }, [hotelId, token]);
 
-  // Initialize scheduler once it's available
   useEffect(() => {
     if (scheduler) {
       setEvents(hotelReservations);
       setResources(hotelRooms);
-
       const sevenDaysAgo = new Date();
       sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
       scheduler.scrollTo(sevenDaysAgo.toISOString().split("T")[0]);
@@ -131,13 +89,15 @@ const Scheduler = () => {
     setScheduler,
     events,
     resources,
-    navigate
+    navigate,
+    setDrawerOpen, // Open drawer instead of modal
+    setSelectedResourceId
   );
 
   return (
-    <ReservationLayout>
+    <Layout>
       <Spin spinning={loading}>
-        <main className="mt-10">
+        <main className="mt-10 px-4">
           {error && <div className="text-red-500">{error}</div>}
           <DayPilotScheduler
             {...config}
@@ -147,7 +107,15 @@ const Scheduler = () => {
           />
         </main>
       </Spin>
-    </ReservationLayout>
+
+      {/* Drawer */}
+      <ModalDrawer
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        pageTitle={`Reservation Details `}
+        resourceId={selectedResourceId}
+      />
+    </Layout>
   );
 };
 

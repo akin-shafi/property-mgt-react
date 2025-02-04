@@ -12,7 +12,7 @@ const ReceiptModal = ({ visible, onClose, reservationId, token }) => {
       fetchReservationById(reservationId, token)
         .then((data) => {
           console.log("Fetched reservation data: ", data); // Log the API response to confirm data
-          setReservationData(data);
+          setReservationData(data.reservationDetails);
         })
         .catch((error) => {
           console.error("Error fetching reservation:", error);
@@ -36,12 +36,18 @@ const ReceiptModal = ({ visible, onClose, reservationId, token }) => {
   }
 
   // Accessing necessary details from reservationData
-  const { reservationDetails, guest, billing, bookedRooms } = reservationData;
+  const {
+    id,
+    checkInDate,
+    checkOutDate,
+    numberOfNights,
+    guest,
+    billing,
+    bookedRooms,
+  } = reservationData;
   const grandTotal = billing?.[0]?.grandTotal || "N/A";
   const amountPaid = billing?.[0]?.amountPaid || "N/A";
   const balanceDue = billing?.[0]?.balance || "N/A";
-
-  console.log("Reservation Data Details: ", reservationDetails); // Log to check if data exists
 
   return (
     <Modal
@@ -67,15 +73,16 @@ const ReceiptModal = ({ visible, onClose, reservationId, token }) => {
         <div className="receipt-header">
           <div>
             <p>
-              <strong>Reservation No:</strong> {reservationDetails?.id || "N/A"}
+              <strong>Reservation No:</strong> {id || "N/A"}
             </p>
             <p>
-              <strong>Check-In:</strong>{" "}
-              {reservationDetails?.checkInDate || "N/A"}
+              <strong>Check-In:</strong> {checkInDate || "N/A"}
             </p>
             <p>
-              <strong>Check-Out:</strong>{" "}
-              {reservationDetails?.checkOutDate || "N/A"}
+              <strong>Check-Out:</strong> {checkOutDate || "N/A"}
+            </p>
+            <p>
+              <strong>Number(s) of Night:</strong> {numberOfNights || "N/A"}
             </p>
           </div>
         </div>
@@ -90,30 +97,80 @@ const ReceiptModal = ({ visible, onClose, reservationId, token }) => {
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>
-                <strong>Full Name</strong>
-              </td>
-              <td>{guest?.fullName || "N/A"}</td>
-            </tr>
-            <tr>
-              <td>
-                <strong>Email</strong>
-              </td>
-              <td>{guest?.email || "N/A"}</td>
-            </tr>
-            <tr>
-              <td>
-                <strong>Phone</strong>
-              </td>
-              <td>{guest?.phone || "N/A"}</td>
-            </tr>
-            <tr>
-              <td>
-                <strong>Address</strong>
-              </td>
-              <td>{guest?.address || "N/A"}</td>
-            </tr>
+            {guest ? (
+              <>
+                <tr>
+                  <td>
+                    <strong>Full Name</strong>
+                  </td>
+                  <td>{guest.fullName || "N/A"}</td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>Email</strong>
+                  </td>
+                  <td>{guest.email || "N/A"}</td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>Phone</strong>
+                  </td>
+                  <td>{guest.phone || "N/A"}</td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>Address</strong>
+                  </td>
+                  <td>{guest.address || "N/A"}</td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>ID Proof</strong>
+                  </td>
+                  <td>{guest.idProof || "N/A"}</td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>Identity Type</strong>
+                  </td>
+                  <td>{guest.identityType || "N/A"}</td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>Identity Number</strong>
+                  </td>
+                  <td>{guest.identityNumber || "N/A"}</td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>Nationality</strong>
+                  </td>
+                  <td>{guest.nationality || "N/A"}</td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>Gender</strong>
+                  </td>
+                  <td>{guest.gender || "N/A"}</td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>Created At</strong>
+                  </td>
+                  <td>{guest.createdAt || "N/A"}</td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>Updated At</strong>
+                  </td>
+                  <td>{guest.updatedAt || "N/A"}</td>
+                </tr>
+              </>
+            ) : (
+              <tr>
+                <td colSpan="2">No guest information available</td>
+              </tr>
+            )}
           </tbody>
         </table>
 
@@ -125,17 +182,17 @@ const ReceiptModal = ({ visible, onClose, reservationId, token }) => {
               <th>Room</th>
               <th>Adults</th>
               <th>Children</th>
-              <th>Total</th>
+              <th>Price</th>
             </tr>
           </thead>
           <tbody>
-            {bookedRooms?.length ? (
+            {Array.isArray(bookedRooms) && bookedRooms.length > 0 ? (
               bookedRooms.map((room, index) => (
                 <tr key={index}>
                   <td>{room.roomName || "Room"}</td>
                   <td>{room.numberOfAdults}</td>
                   <td>{room.numberOfChildren}</td>
-                  <td>₹{room.roomPrice}</td>
+                  <td>NGN{room.roomPrice}</td>
                 </tr>
               ))
             ) : (
@@ -149,16 +206,16 @@ const ReceiptModal = ({ visible, onClose, reservationId, token }) => {
         {/* Billing Summary */}
         <div className="receipt-footer">
           <p>
-            <strong>Subtotal:</strong> ₹{billing?.[0]?.totalPrice || "N/A"}
+            <strong>Subtotal:</strong> NGN{billing?.[0]?.totalPrice || "N/A"}
           </p>
           <p>
-            <strong>Amount Paid:</strong> ₹{amountPaid}
+            <strong>Amount Paid:</strong> NGN{amountPaid}
           </p>
           <p>
-            <strong>Balance Due:</strong> ₹{balanceDue}
+            <strong>Balance Due:</strong> NGN{balanceDue}
           </p>
           <p>
-            <strong>Grand Total:</strong> ₹{grandTotal}
+            <strong>Grand Total:</strong> NGN{grandTotal}
           </p>
         </div>
       </div>

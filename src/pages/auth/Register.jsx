@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button, Spin } from "antd"; // Ant Design components
 import {
-  LockOutlined,
+  // LockOutlined,
   EyeOutlined,
   EyeInvisibleOutlined,
 } from "@ant-design/icons";
@@ -50,8 +50,7 @@ export default function Register() {
 
   return (
     <div className="grid min-h-screen lg:grid-cols-12">
-      <AuthAside />
-      <div className="flex items-center justify-center p-8 lg:col-span-8">
+      <div className="flex items-center justify-center p-8 lg:col-span-6">
         <div className="mx-auto w-full max-w-sm space-y-6">
           <div className="space-y-2 text-center">
             <Logo />
@@ -74,12 +73,7 @@ export default function Register() {
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="email">
-                Email
-                <span className="text-red-600 ml-2">
-                  <LockOutlined />
-                </span>
-              </Label>
+              <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
                 placeholder="Enter your email"
@@ -93,9 +87,9 @@ export default function Register() {
             <div className="space-y-2">
               <Label htmlFor="password">
                 Password
-                <span className="text-red-600 ml-2">
+                {/* <span className="text-red-600 ml-2">
                   <LockOutlined />
-                </span>
+                </span> */}
               </Label>
               <div className="relative">
                 <Input
@@ -149,6 +143,10 @@ export default function Register() {
             </div>
           </form>
         </div>
+      </div>
+
+      <div className="hidden lg:block bg-appBlue p-12 xl:p-20 text-white relative lg:col-span-6">
+        <AuthAside />
       </div>
     </div>
   );

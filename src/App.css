@@ -31,6 +31,11 @@
   src: url("./assets/fonts/AzoSans-BlackItalic.ttf");
 }
 
+
+.scheduler_default_corner_inner {
+  display: none !important;
+}
+
 *,
 *::after,
 *::before {

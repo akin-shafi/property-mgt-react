@@ -1,6 +1,7 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import Login from "./pages/auth/Login";
+import ListDevice from "./pages/auth/ListDevice";
 import Register from "./pages/auth/Register";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import VerifyTwoFactor from "./pages/auth/VerifyTwoFactor";
@@ -31,9 +32,12 @@ const router = createBrowserRouter(
       path: "/login",
       element: <Login />,
     },
-
     {
-      path: "/register",
+      path: "/list-device",
+      element: <ListDevice />,
+    },
+    {
+      path: "/auth/register",
       element: <Register />,
     },
     {

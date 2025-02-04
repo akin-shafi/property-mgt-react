@@ -58,12 +58,12 @@ export function useSession() {
     }
   }, [session, navigate, location.pathname]);
 
-  const login = async (email, password) => {
+  const login = async (username, password, tenantId) => {
     try {
       const response = await fetch(`${API_BASE_URL}/users/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ username, password, tenantId }),
       });
 
       if (!response.ok) {
@@ -71,7 +71,7 @@ export function useSession() {
       }
 
       const data = await response.json();
-      const userSession = { ...data, email }; // Assuming response contains user data
+      const userSession = { ...data, username }; // Assuming response contains user data
 
       // Save session in storage and update state
       setSession(userSession);
