@@ -20,7 +20,7 @@ import Dashboard from "./pages/dashboard";
 import ArrivalReport from "./pages/report";
 import Companies from "./pages/companies";
 
-import DashboardPMS from "./pages/dashboard/index-2";
+import DashboardPMS from "./pages/dashboard";
 
 // Define routes
 const router = createBrowserRouter(

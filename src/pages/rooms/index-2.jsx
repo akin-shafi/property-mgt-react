@@ -6,8 +6,8 @@ import { StatusLegend } from "@/components/status-legend";
 import { RoomSection } from "@/components/room-section";
 import { StatusCounter } from "@/components/status-counter";
 import Layout from "@/components/utils/Layout";
-import { fetchHotelRoomsWithPrice } from "../../hooks/useAction";
-import { useSession } from "../../hooks/useSession";
+// import { fetchHotelRoomsWithPrice } from "../../hooks/useAction";
+// import { useSession } from "../../hooks/useSession";
 
 const executiveRooms = [
   { number: "101", guest: "Milan Pal", status: "occupied" },
@@ -29,39 +29,39 @@ const familyRooms = [
 ];
 
 export default function RoomsView() {
-  const { session } = useSession();
-  const token = session.token;
-  const hotelId = session?.user?.hotelId;
-  const [hotelRooms, setHotelRooms] = useState([]);
+  // const { session } = useSession();
+  // const token = session.token;
+  // const hotelId = session?.user?.hotelId;
+  // const [hotelRooms, setHotelRooms] = useState([]);
 
-  useEffect(() => {
-    const fetchRoomData = async () => {
-      setLoading(true);
-      setError(null);
+  // useEffect(() => {
+  //   const fetchRoomData = async () => {
+  //     setLoading(true);
+  //     setError(null);
 
-      try {
-        const hotelData = await fetchHotelRoomsWithPrice(hotelId, token);
-        // console.log("hotelData:--", hotelData);
-        const formattedRooms = hotelData.map((room) => ({
-          id: room.roomName,
-          name: `Room ${room.roomName}`,
-          status: room.maintenanceStatus,
-          capacity: room.capacity,
-          availability: room.isAvailable,
-        }));
+  //     try {
+  //       const hotelData = await fetchHotelRoomsWithPrice(hotelId, token);
+  //       // console.log("hotelData:--", hotelData);
+  //       const formattedRooms = hotelData.map((room) => ({
+  //         id: room.roomName,
+  //         name: `Room ${room.roomName}`,
+  //         status: room.maintenanceStatus,
+  //         capacity: room.capacity,
+  //         availability: room.isAvailable,
+  //       }));
 
-        setHotelRooms(formattedRooms);
-      } catch (err) {
-        setError(err.message || "Failed to fetch room data.");
-      } finally {
-        setLoading(false);
-      }
-    };
+  //       setHotelRooms(formattedRooms);
+  //     } catch (err) {
+  //       setError(err.message || "Failed to fetch room data.");
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
 
-    if (hotelId && token) {
-      fetchRoomData();
-    }
-  }, [hotelId, token]);
+  //   if (hotelId && token) {
+  //     fetchRoomData();
+  //   }
+  // }, [hotelId, token]);
   return (
     <Layout>
       <div className="min-h-screen bg-gray-50 p-6">

@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/CardComponent";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/cardComponent";
 
 export function StatCard({ title, value, icon }) {
   return (
