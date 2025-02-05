@@ -6,7 +6,7 @@ import {
   EyeOutlined,
   EyeInvisibleOutlined,
 } from "@ant-design/icons";
-import { Button } from "antd";
+import { Button } from "@/components/ui/button";
 import { Spin } from "antd"; // Import Spin for loading spinner
 import AuthAside from "@/components/AuthAside"; // Adjust the path based on your folder structure
 import Logo from "@/components/Logo"; // Adjust the path based on your folder structure
