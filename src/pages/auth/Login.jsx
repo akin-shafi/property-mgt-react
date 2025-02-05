@@ -6,7 +6,7 @@ import {
   EyeOutlined,
   EyeInvisibleOutlined,
 } from "@ant-design/icons";
-import Button from "@/components/ui/button";
+import { Button } from "antd";
 import { Spin } from "antd"; // Import Spin for loading spinner
 import AuthAside from "@/components/AuthAside"; // Adjust the path based on your folder structure
 import Logo from "@/components/Logo"; // Adjust the path based on your folder structure
@@ -151,7 +151,7 @@ export default function LoginPage() {
 
                 <Button
                   type="submit"
-                  className="w-full"
+                  className="w-full bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 "
                   size="lg"
                   loading={loading}
                 >
