@@ -10,24 +10,26 @@ import {
   CategoryScale,
   LinearScale,
   BarElement,
-  // LineElement,
+  LineElement,
   PointElement,
   ArcElement,
   Title,
   Tooltip,
   Legend,
+  LineController, // Add this import
 } from "chart.js";
 
 ChartJS.register(
   CategoryScale,
   LinearScale,
   BarElement,
-  // LineElement,
+  LineElement,
   PointElement,
   ArcElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  LineController // Register LineController
 );
 
 export default function Dashboard() {
