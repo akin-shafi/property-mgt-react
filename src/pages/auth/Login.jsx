@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useSession } from "../../hooks/useSession";
+import { useSession } from "@/hooks/useSession";
 import {
   // LockOutlined,
   EyeOutlined,
