@@ -1,5 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/AvatarComponent";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/CardComponent";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/cardComponent";
 
 const recentBookings = [
   {
