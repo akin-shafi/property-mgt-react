@@ -1,21 +1,18 @@
-/* eslint-disable no-unused-vars */
-// ViewPaymentModal.tsx
 import { useEffect, useState } from "react";
-import { Button } from "antd";
-import { Card } from "@/components/ui/card";
-// import { Separator } from "@/components/ui/separator";
+// import { Card } from "@/components/ui/card";
 import { fetchReservationById } from "@/hooks/useReservation";
 import { Modal } from "antd";
+import { Link } from "react-router-dom";
 
 const ViewPaymentModal = ({ visible, onCancel, resourceId, token }) => {
-  const [paymentDetails, setPaymentDetails] = useState(null);
+  // const [paymentDetails, setPaymentDetails] = useState(null);
   const [reservationData, setReservationData] = useState(null);
 
   useEffect(() => {
     if (resourceId) {
       fetchReservationById(resourceId, token)
         .then((data) => {
-          console.log("Fetched reservation data: ", data); // Log the API response to confirm data
+          // console.log("Fetched reservation data: ", data);
           setReservationData(data.reservationDetails);
         })
         .catch((error) => {
@@ -23,14 +20,6 @@ const ViewPaymentModal = ({ visible, onCancel, resourceId, token }) => {
         });
     }
   }, [resourceId, token]);
-
-  // useEffect(() => {
-  //   if (visible && resourceId) {
-  //     // Fetch payment details using the resourceId
-  //     // Example: Replace with actual API call to fetch payment data
-  //     setPaymentDetails(`Payment details for resource ${resourceId}`);
-  //   }
-  // }, [visible, resourceId]);
 
   if (!reservationData) {
     return null;
@@ -69,7 +58,7 @@ const ViewPaymentModal = ({ visible, onCancel, resourceId, token }) => {
     checkInDate,
     checkOutDate,
     numberOfNights,
-    guest,
+    // guest,
     billing,
     bookedRooms,
   } = reservationData;
@@ -78,7 +67,7 @@ const ViewPaymentModal = ({ visible, onCancel, resourceId, token }) => {
   const grandTotal = billing?.[0]?.grandTotal || "N/A";
   const amountPaid = billing?.[0]?.amountPaid || "N/A";
   const balanceDue = billing?.[0]?.balance || "N/A";
-
+  const adult = bookedRooms?.[0].numberOfAdults || "N/A";
   const reservationDate = formatReservationDate(checkInDate, checkOutDate);
 
   return (
@@ -89,7 +78,7 @@ const ViewPaymentModal = ({ visible, onCancel, resourceId, token }) => {
       footer={null}
       width={600}
     >
-      <div>{paymentDetails}</div>
+      {/* <div>{paymentDetails}</div> */}
 
       <div className="max-w-4xl mx-auto">
         <div className="grid grid-cols-[1fr,auto] gap-6">
@@ -105,26 +94,9 @@ const ViewPaymentModal = ({ visible, onCancel, resourceId, token }) => {
                     <td className="text-muted-foreground">Number of Night</td>
                     <td className="font-medium">: {numberOfNights}</td>
                   </tr>
-
                   <tr>
-                    <td className="text-muted-foreground">Special Request</td>
-                    <td className="font-medium">:</td>
-                  </tr>
-                  <tr>
-                    <td className="text-muted-foreground">Source</td>
-                    <td className="font-medium">: Goibibo</td>
-                  </tr>
-                  <tr>
-                    <td className="text-muted-foreground">Room Type</td>
-                    <td className="font-medium">: Executive</td>
-                  </tr>
-                  <tr>
-                    <td className="text-muted-foreground">No. of guest</td>
-                    <td className="font-medium">: 2</td>
-                  </tr>
-                  <tr>
-                    <td className="text-muted-foreground">Meal Plan</td>
-                    <td className="font-medium">: EP</td>
+                    <td className="text-muted-foreground">No. of Adults</td>
+                    <td className="font-medium">: {adult}</td>
                   </tr>
                   <tr>
                     <td className="text-muted-foreground">Payment Mode</td>
@@ -155,27 +127,41 @@ const ViewPaymentModal = ({ visible, onCancel, resourceId, token }) => {
           </div>
 
           <div className="space-y-2 w-32">
-            <Button variant="outline" className="w-full justify-center">
-              Edit
-            </Button>
-            <Button variant="outline" className="w-full justify-center">
-              Invoice
-            </Button>
-            <Button variant="outline" className="w-full justify-center">
-              Add Service
-            </Button>
-            <Button variant="outline" className="w-full justify-center">
-              Add Payment
-            </Button>
-            <Button variant="outline" className="w-full justify-center">
-              Check out
-            </Button>
-            <Button variant="outline" className="w-full justify-center">
-              Undo Check in
-            </Button>
-            <Button variant="outline" className="w-full justify-center">
-              Exchange Room
-            </Button>
+            <Link to={`/pms/reservations/edit?reservationid=${id}`}>
+              <a className="w-full justify-center block text-center border border-gray-300 py-2 rounded-md">
+                Edit
+              </a>
+            </Link>
+            <Link to={`/invoice/${id}`}>
+              <a className="w-full justify-center block text-center border border-gray-300 py-2 rounded-md">
+                Invoice
+              </a>
+            </Link>
+            <Link href={`/add-service/${id}`}>
+              <a className="w-full justify-center block text-center border border-gray-300 py-2 rounded-md">
+                Add Service
+              </a>
+            </Link>
+            <Link href={`/add-payment/${id}`}>
+              <a className="w-full justify-center block text-center border border-gray-300 py-2 rounded-md">
+                Add Payment
+              </a>
+            </Link>
+            <Link href={`/check-out/${id}`}>
+              <a className="w-full justify-center block text-center border border-gray-300 py-2 rounded-md">
+                Check out
+              </a>
+            </Link>
+            <Link href={`/undo-check-in/${id}`}>
+              <a className="w-full justify-center block text-center border border-gray-300 py-2 rounded-md">
+                Undo Check in
+              </a>
+            </Link>
+            <Link href={`/exchange-room/${id}`}>
+              <a className="w-full justify-center block text-center border border-gray-300 py-2 rounded-md">
+                Exchange Room
+              </a>
+            </Link>
           </div>
         </div>
       </div>

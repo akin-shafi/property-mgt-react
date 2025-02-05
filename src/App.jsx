@@ -12,6 +12,7 @@ import Guests from "./pages/guests";
 import Reservations from "./pages/reservations";
 import ReservationsList from "./pages/reservations/list";
 import NewReservations from "./pages/reservations/new";
+import ReservationsEdit from "./pages/reservations/edit";
 import NewReservationsTest from "./pages/reservations/new/ReservationInformation";
 
 import Onboarding from "./pages/onboarding";
@@ -69,6 +70,10 @@ const router = createBrowserRouter(
     {
       path: "/pms/reservations/new",
       element: <Reservations />,
+    },
+    {
+      path: "/pms/reservations/edit",
+      element: <ReservationsEdit />,
     },
     {
       path: "/pms/list-reservations",

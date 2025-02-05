@@ -333,7 +333,7 @@ body {
   display: none !important;
 } */
 
-.hidden, #demo-label{display: none !important;}
+#demo-label{display: none !important;}
 
 
 @media (max-width: 600px) {
