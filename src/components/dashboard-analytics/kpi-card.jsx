@@ -3,7 +3,7 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-} from "../../components/components/ui/card";
+} from "@/components/components/ui/card";
 
 export function KPICard({ title, value, valueClassName = "" }) {
   return (

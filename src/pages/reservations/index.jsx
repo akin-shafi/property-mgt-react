@@ -1,5 +1,5 @@
-import Layout from "../../components/utils/Layout";
-import { ReservationForm } from "../../components/forms/reservation-form";
+import Layout from "@/components/utils/Layout";
+import { ReservationForm } from "@/components/forms/reservation-form";
 
 export default function ReservationPage() {
   return (

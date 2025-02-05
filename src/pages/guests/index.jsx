@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import Layout from "../../components/utils/Layout";
+import Layout from "@/components/utils/Layout";
 import { useSession } from "../../hooks/useSession";
 import {
   Table,

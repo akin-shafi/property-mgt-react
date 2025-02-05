@@ -1,6 +1,6 @@
 // import React from "react";
 
-import OnboardingLayout from "../../components/utils/OnboardingLayout";
+import OnboardingLayout from "@/components/utils/OnboardingLayout";
 
 export default function Onboarding() {
   return (

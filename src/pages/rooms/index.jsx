@@ -1,7 +1,7 @@
 "use client";
 // import { useState } from "react";
 import { RoomList } from "./room-list";
-import ReservationLayout from "../../components/utils/ReservationLayout";
+import ReservationLayout from "@/components/utils/ReservationLayout";
 // import AddRoomModal from "@/components/front-desk/modals/add-room-modal"; // Import AddRoomModal
 export default function Rooms() {
   // const [rooms, setRooms] = useState(mockRooms);

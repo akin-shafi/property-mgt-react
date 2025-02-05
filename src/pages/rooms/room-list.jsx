@@ -13,7 +13,7 @@ import {
   fetchHotelRoomsByHotelId,
 } from "../../hooks/useAction";
 import { useAuth } from "../../context/AuthContext"; // Import AuthContext
-import { RoomModal } from "../../components/front-desk/modals/room-modal";
+import { RoomModal } from "@/components/front-desk/modals/room-modal";
 
 export function RoomList() {
   const { state } = useAuth(); // Destructure logout function from context

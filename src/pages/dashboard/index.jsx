@@ -1,15 +1,15 @@
-import ReservationLayout from "../../components/utils/ReservationLayout";
-// import { Header } from "../../components/header";
-import { RecentBookings } from "../../components/dashboard-analytics/recent-bookings";
-import { ReservationChart } from "../../components/dashboard-analytics/reservation-chart";
-import { StatCard } from "../../components/dashboard-analytics/stat-card";
-import { SummaryStatistics } from "../../components/dashboard-analytics/summary-statistics";
+import ReservationLayout from "@/components/utils/ReservationLayout";
+// import { Header } from "@/components/header";
+import { RecentBookings } from "@/components/dashboard-analytics/recent-bookings";
+import { ReservationChart } from "@/components/dashboard-analytics/reservation-chart";
+import { StatCard } from "@/components/dashboard-analytics/stat-card";
+import { SummaryStatistics } from "@/components/dashboard-analytics/summary-statistics";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-} from "../../components/ui/CardComponent";
+} from "@/components/ui/CardComponent";
 import { Bed, CalendarRange, DollarSign, Users } from "lucide-react";
 
 export default function Dashoard() {

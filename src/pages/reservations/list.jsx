@@ -7,7 +7,7 @@ import {
   FileTextOutlined,
   DeleteOutlined,
 } from "@ant-design/icons";
-import Layout from "../../components/utils/Layout";
+import Layout from "@/components/utils/Layout";
 import { useSession } from "@/hooks/useSession";
 import { fetchReservationByHotelId } from "@/hooks/useReservation";
 import ReceiptModal from "@/components/modals/ReceiptModal";

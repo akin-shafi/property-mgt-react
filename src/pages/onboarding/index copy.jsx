@@ -4,10 +4,10 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext"; // Access AuthContext
 import { toast } from "react-toastify";
 import OnboardingStepContent from "./OnboardingStepContent";
-import OnboardingTopNav from "../../components/onboarding/TopNav";
-import AsideLeft from "../../components/onboarding/sideNav";
-import Alert from "../../components/utils/Alert";
-import validateStepData from "../../components/utils/validateStepData";
+import OnboardingTopNav from "@/components/onboarding/TopNav";
+import AsideLeft from "@/components/onboarding/sideNav";
+import Alert from "@/components/utils/Alert";
+import validateStepData from "@/components/utils/validateStepData";
 // import {Spin} from "antd";
 
 export default function OnboardingLayout() {

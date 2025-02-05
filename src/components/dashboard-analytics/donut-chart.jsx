@@ -5,7 +5,7 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-} from "../../components/components/ui/card";
+} from "@/components/components/ui/card";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 
 export function DonutChart({ title, data }) {

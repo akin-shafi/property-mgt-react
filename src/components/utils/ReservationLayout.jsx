@@ -1,5 +1,5 @@
-import { TopNav } from "../../components/layout/top-nav";
-// import { SideNav } from "../../components/layout/side-nav";
+import { TopNav } from "@/components/layout/top-nav";
+// import { SideNav } from "@/components/layout/side-nav";
 import { NavigationProvider } from "../../context/NavigationContext";
 import { useNavigation } from "../../context/NavigationContext"; // Import useNavigation
 

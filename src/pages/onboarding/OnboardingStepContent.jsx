@@ -1,6 +1,6 @@
-import PropertyInfo from "../../components/forms/onboarding/PropertyInfo";
-import PropertyDetails from "../../components/forms/onboarding/PropertyDetails";
-import RooomSetup from "../../components/forms/onboarding/RooomSetup";
+import PropertyInfo from "@/components/forms/onboarding/PropertyInfo";
+import PropertyDetails from "@/components/forms/onboarding/PropertyDetails";
+import RooomSetup from "@/components/forms/onboarding/RooomSetup";
 const OnboardingStepContent = ({
   currentStep,
   // formData,

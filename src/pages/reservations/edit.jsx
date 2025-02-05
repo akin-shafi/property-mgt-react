@@ -6,7 +6,7 @@ import {
   TeamOutlined,
   HomeOutlined,
 } from "@ant-design/icons";
-import ReservationLayout from "../../components/utils/ReservationLayout";
+import ReservationLayout from "@/components/utils/ReservationLayout";
 // import { useSession } from "@/hooks/useSession";
 
 const { RangePicker } = DatePicker;

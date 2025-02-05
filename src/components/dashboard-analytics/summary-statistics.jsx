@@ -3,7 +3,7 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-} from "../../components/ui/CardComponent";
+} from "@/components/ui/CardComponent";
 import {
   Bed,
   Coffee,

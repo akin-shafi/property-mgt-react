@@ -1,11 +1,11 @@
 "use client";
 
 import { Plus, DollarSign } from "lucide-react";
-import { DateNavigation } from "../../components/date-picker";
-import { StatusLegend } from "../../components/status-legend";
-import { RoomSection } from "../../components/room-section";
-import { StatusCounter } from "../../components/status-counter";
-import Layout from "../../components/utils/Layout";
+import { DateNavigation } from "@/components/date-picker";
+import { StatusLegend } from "@/components/status-legend";
+import { RoomSection } from "@/components/room-section";
+import { StatusCounter } from "@/components/status-counter";
+import Layout from "@/components/utils/Layout";
 import { fetchHotelRoomsWithPrice } from "../../hooks/useAction";
 import { useSession } from "../../hooks/useSession";
 
@@ -33,7 +33,7 @@ export default function RoomsView() {
   const token = session.token;
   const hotelId = session?.user?.hotelId;
   const [hotelRooms, setHotelRooms] = useState([]);
-  
+
   useEffect(() => {
     const fetchRoomData = async () => {
       setLoading(true);

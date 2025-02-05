@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Table, Input, DatePicker, Space, Select } from "antd";
-import Layout from "../../components/utils/Layout";
+import Layout from "@/components/utils/Layout";
 import moment from "moment";
 import HotelSalesReport from "./HotelSalesReport"; // Existing component
 import DailyForecastReport from "./DailyForecastReport"; // Existing component

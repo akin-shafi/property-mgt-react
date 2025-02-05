@@ -7,18 +7,16 @@ export default function AuthAside() {
       <div className="absolute top-0 left-0 w-32 h-32 bg-white/10 rounded-br-full" />
       <div className="relative z-20">
         <div className="mb-12">
-          <h1 className="text-2xl font-light tracking-wide ">
-            Simply Absolute
+          <h1 className="text-2xl font-light text-orange-500 tracking-wide ">
+            SuiteFlow
           </h1>
-          <div className="text-orange-500 text-sm">
-            Property Management System
-          </div>
+          {/* <div className=" text-sm">Property Management System</div> */}
         </div>
         <div className="space-y-6">
-          <h2 className="text-2xl font-bold">
+          {/* <h2 className="text-2xl font-bold">
             Welcome to <br />
-            Simply Absolute PMS
-          </h2>
+            HotelFlow 
+          </h2> */}
           <p className="text-lg text-white/80">
             Simplifying property management with a comprehensive, easy-to-use
             system that streamlines operations, boosts productivity, and

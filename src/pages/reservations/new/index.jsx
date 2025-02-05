@@ -1,6 +1,6 @@
 "use client";
-// import ReservationLayout from "../../../components/utils/ReservationLayout";
-import Layout from "../../../components/utils/Layout";
+// import ReservationLayout from "@/components/utils/ReservationLayout";
+import Layout from "@/components/utils/Layout";
 import { ReservationForm } from "./reservation-form";
 import { useSearchParams } from "react-router-dom";
 

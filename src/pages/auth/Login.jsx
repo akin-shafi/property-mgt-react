@@ -6,13 +6,13 @@ import {
   EyeOutlined,
   EyeInvisibleOutlined,
 } from "@ant-design/icons";
-import { Button } from "../../components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Spin } from "antd"; // Import Spin for loading spinner
-import AuthAside from "../../components/AuthAside"; // Adjust the path based on your folder structure
-import Logo from "../../components/Logo"; // Adjust the path based on your folder structure
-// import { Checkbox } from "../../components/ui/Checkbox"; // Adjust paths as needed
-import { Input } from "../../components/ui/Input";
-import { Label } from "../../components/ui/Label";
+import AuthAside from "@/components/AuthAside"; // Adjust the path based on your folder structure
+import Logo from "@/components/Logo"; // Adjust the path based on your folder structure
+// import { Checkbox } from "@/components/ui/Checkbox"; // Adjust paths as needed
+import { Input } from "@/components/ui/Input";
+import { Label } from "@/components/ui/Label";
 
 export default function LoginPage() {
   const [message, setMessage] = useState(""); // State for messages

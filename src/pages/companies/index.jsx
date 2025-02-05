@@ -2,8 +2,8 @@ import { useState } from "react";
 import { Table, Button, Input } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { CSVLink } from "react-csv"; // Import CSVLink for CSV download functionality
-import Layout from "../../components/utils/Layout";
-import InvoiceModal from "../../components/modals/InvoiceModal"; // Import the new InvoiceModal component
+import Layout from "@/components/utils/Layout";
+import InvoiceModal from "@/components/modals/InvoiceModal"; // Import the new InvoiceModal component
 
 const Companies = () => {
   const [filterText, setFilterText] = useState("");

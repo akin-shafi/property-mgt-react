@@ -6,10 +6,10 @@ import {
   EyeOutlined,
   EyeInvisibleOutlined,
 } from "@ant-design/icons";
-import AuthAside from "../../components/AuthAside";
-import Logo from "../../components/Logo";
-import { Input } from "../../components/ui/Input";
-import { Label } from "../../components/ui/Label";
+import AuthAside from "@/components/AuthAside";
+import Logo from "@/components/Logo";
+import { Input } from "@/components/ui/Input";
+import { Label } from "@/components/ui/Label";
 
 export default function Register() {
   const navigate = useNavigate();
