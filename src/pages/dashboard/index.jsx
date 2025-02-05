@@ -1,5 +1,4 @@
 "use client";
-
 import { DonutChart } from "@/components/dashboard-analytics/donut-chart";
 import { KPICard } from "@/components/dashboard-analytics/kpi-card";
 import { RevenueChart } from "@/components/dashboard-analytics/revenue-chart";
@@ -11,7 +10,7 @@ import {
   CategoryScale,
   LinearScale,
   BarElement,
-  LineElement,
+  // LineElement,
   PointElement,
   ArcElement,
   Title,
@@ -23,7 +22,7 @@ ChartJS.register(
   CategoryScale,
   LinearScale,
   BarElement,
-  LineElement,
+  // LineElement,
   PointElement,
   ArcElement,
   Title,
