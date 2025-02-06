@@ -4,10 +4,10 @@ import { useState, useEffect } from "react";
 
 const PrintOptions = ({ onChange }) => {
   const [options, setOptions] = useState({
-    printGuestCard: false,
+    // printGuestCard: false,
     // suppressRate: false,
-    printFolio: false,
-    printReceipt: true,
+    // printFolio: false,
+    printInvoice: true,
   });
 
   useEffect(() => {
@@ -34,13 +34,7 @@ const PrintOptions = ({ onChange }) => {
               className="accent-appOrange rounded border-gray-300 text-blue-600 shadow-sm focus:ring focus:ring-blue-300 focus:ring-opacity-50"
             />
             <span>
-              {key === "printGuestCard"
-                ? "Print Guest Registration Card"
-                : // : key === "suppressRate"
-                // ? "Suppress Rate on Registration Card"
-                key === "printFolio"
-                ? "Print Folio"
-                : "Print Receipt"}
+              {key === "printFolio" ? "Print Folio" : "Print Invoice"}
             </span>
           </label>
         </div>

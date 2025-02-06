@@ -8,16 +8,18 @@ import { getSchedulerConfig } from "@/hooks/SchedulerConfig";
 import { hotelBookings } from "@/hooks/useReservation";
 import { fetchHotelRoomsWithPrice } from "@/hooks/useAction";
 import { Spin } from "antd";
-import ViewPaymentModal from "@/components/modals/ViewPaymentModal";
+// import ViewPaymentModal from "@/components/modals/ViewPaymentModal";
 import ModalDrawer from "@/components/modals/ModalDrawer";
 
-// import ViewDetailsModal from "@/components/modals/ViewDetailsModal";
-// import EditReservationModal from "@/components/modals/EditReservationModal";
+import ViewDetailsModal from "@/components/modals/ViewDetailsModal";
+import EditReservationModal from "@/components/modals/EditReservationModal";
+import InvoiceModal from "@/components/modals/InvoiceModal";
 
 const Scheduler = () => {
   const { session } = useSession();
   const token = session.token;
   const hotelId = session?.user?.hotelId;
+  const hotelName = session?.user?.hotelName;
   const [hotelRooms, setHotelRooms] = useState([]);
   const [hotelReservations, setHotelReservations] = useState([]);
   const [scheduler, setScheduler] = useState(null);
@@ -25,11 +27,13 @@ const Scheduler = () => {
   const [resources, setResources] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [isViewPaymentModalVisible, setViewPaymentModalVisible] =
-    useState(false); // Modal state
-  // const [isEditReservationVisible, setEditReservationVisible] = useState(false); // Modal state
-  // const [isViewDetailsModalVisible, setViewDetailsModalVisible] =
-  //   useState(false); // Example modal state
+  // const [isViewPaymentModalVisible, setViewPaymentModalVisible] =
+  //   useState(false); // Modal state
+  const [isEditReservationVisible, setEditReservationVisible] = useState(false); // Modal state
+  const [isInvoiceModalVisible, setInvoiceModalVisible] = useState(false); // Modal state
+
+  const [isViewDetailsModalVisible, setViewDetailsModalVisible] =
+    useState(false); // Example modal state
   const [selectedResourceId, setSelectedResourceId] = useState(null); // Store resourceId
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -105,14 +109,24 @@ const Scheduler = () => {
     events,
     resources,
     navigate,
-    setViewPaymentModalVisible, // Pass the modal state handler
-    // setViewDetailsModalVisible,
+    // setViewPaymentModalVisible,
+    setViewDetailsModalVisible,
     // setEditReservationVisible,
     setSelectedResourceId // Pass the setSelectedResourceId function to update the resourceId
   );
 
   const toggleDrawer = () => {
     setDrawerOpen((prev) => !prev);
+  };
+
+  const handleOpenEditReservationModal = (buttonName) => {
+    // console.log(`Button clicked: ${buttonName}`);
+    setViewDetailsModalVisible(false);
+    if (buttonName === "Edit") {
+      setEditReservationVisible(true);
+    } else if (buttonName === "Invoice") {
+      setInvoiceModalVisible(true);
+    }
   };
 
   return (
@@ -128,30 +142,39 @@ const Scheduler = () => {
           />
         </main>
       </Spin>
-
       {/* Modals */}
-      <ViewPaymentModal
+      {/* <ViewPaymentModal
         visible={isViewPaymentModalVisible}
         onCancel={() => setViewPaymentModalVisible(false)}
         resourceId={selectedResourceId} // Pass the selected resourceId to modal
         token={token}
-      />
-
+      /> */}
       <ModalDrawer
         open={drawerOpen}
         onClose={toggleDrawer}
         resourceId={selectedResourceId}
       />
-      {/* <ViewDetailsModal
+      <ViewDetailsModal
         visible={isViewDetailsModalVisible}
         onCancel={() => setViewDetailsModalVisible(false)}
-        resourceId={selectedResourceId} // Pass the selected resourceId to modal
+        onOtherModal={(buttonName) =>
+          handleOpenEditReservationModal(buttonName)
+        }
+        resourceId={selectedResourceId}
+        token={token}
       />
       <EditReservationModal
         visible={isEditReservationVisible}
         onCancel={() => setEditReservationVisible(false)}
         resourceId={selectedResourceId} // Pass the selected resourceId to modal
-      /> */}
+      />
+      <InvoiceModal
+        visible={isInvoiceModalVisible}
+        onCancel={() => setInvoiceModalVisible(false)}
+        resourceId={selectedResourceId} // Pass the selected resourceId to modal
+        token={token}
+        hotelName={hotelName}
+      />
     </Layout>
   );
 };

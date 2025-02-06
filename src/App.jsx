@@ -42,7 +42,7 @@ const router = createBrowserRouter(
       element: <Register />,
     },
     {
-      path: "/forgot-password",
+      path: "/auth/forgot-password",
       element: <ForgotPassword />,
     },
     {

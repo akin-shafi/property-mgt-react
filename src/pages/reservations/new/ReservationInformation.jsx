@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button, Tabs, Card, message } from "antd";
 import { useSession } from "@/hooks/useSession";
-
+import { useNavigate } from "react-router-dom";
 import StayInformation from "./formFields/StayInfo";
 import GuestForm from "./formFields/GuestForm";
 import BillingInformation from "./formFields/BillingInformation";
@@ -9,12 +9,14 @@ import PrintOptions from "./formFields/PrintOptions";
 import Layout from "@/components/utils/Layout";
 import { validateReservationForm } from "@/utils/validation";
 import { createReservation } from "@/hooks/useReservation";
-import ReceiptModal from "@/components/modals/ReceiptModal";
+import InvoiceModal from "@/components/modals/InvoiceModal";
 
 const ReservationForm = () => {
+  const navigate = useNavigate();
   const { session } = useSession();
   const token = session?.token;
   const hotelId = session?.user?.hotelId;
+  const hotelName = session?.user?.hotelName;
   const userId = session?.user?.userId;
   const role = session?.user?.role;
 
@@ -40,8 +42,9 @@ const ReservationForm = () => {
   });
 
   const [reservationData, setReservationData] = useState(0);
-  const [isReceiptVisible, setIsReceiptVisible] = useState(false);
-
+  const [isInvoiceModalVisible, setInvoiceModalVisible] = useState(false); // Modal state
+  const [loading, setLoading] = useState(false); // Add loading state
+  const [newResourceId, setResourceId] = useState("");
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     setFormData((prev) => ({
@@ -71,7 +74,6 @@ const ReservationForm = () => {
         },
       }));
     } else if (section === "rooms") {
-      // console.log("section rooms", value);
       const totalPrice = value.reduce(
         (acc, room) =>
           acc + room.roomPrice * formData.reservationDetails.numberOfNights,
@@ -93,44 +95,29 @@ const ReservationForm = () => {
     }
   };
 
-  // const handleSubmit = async (event) => {
-  //   event.preventDefault();
-  //   // Perform form submission logic here
-  //   if (validateReservationForm(formData)) {
-  //     const payload = {
-  //       guestDetails: formData.guestDetails,
-  //       reservationDetails: formData.reservationDetails,
-  //       billingDetails: formData.billingDetails,
-  //       createdBy: userId,
-  //       role: role,
-  //     };
-  //     try {
-  //       console.log(payload);
-  //       message.success("Reservation successfully submitted!");
-  //     } catch (error) {
-  //       message.error(error, "Failed to submit reservation!");
-  //     }
-  //   }
-  // };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true); // Set loading to true when form is submitted
+
     if (validateReservationForm(formData)) {
+      console.log("formData", formData);
       const payload = {
         guestDetails: formData.guestDetails,
         reservationDetails: formData.reservationDetails,
         billingDetails: formData.billingDetails,
         createdBy: userId,
         role: role,
-        // printOptions: formData.printOptions,
       };
 
       try {
         const response = await createReservation(payload, token);
         if (response.statusCode === 200) {
           message.success("Reservation successfully submitted!");
-          if (formData.printOptions.printReceipt) {
-            setIsReceiptVisible(true);
+          if (formData.printOptions.printInvoice) {
+            setResourceId(response.reservationId);
+            setInvoiceModalVisible(true);
+          } else {
+            navigate("/pms/stay-view");
           }
         } else {
           message.error(
@@ -140,7 +127,11 @@ const ReservationForm = () => {
       } catch (error) {
         console.error("Error submitting reservation:", error);
         message.error("Error submitting reservation. Please try again.");
+      } finally {
+        setLoading(false); // Reset loading state after action is complete
       }
+    } else {
+      setLoading(false); // Reset loading state if validation fails
     }
   };
 
@@ -199,15 +190,25 @@ const ReservationForm = () => {
             className="bg-appBlue hover:bg-appBlueLight"
             size="lg"
             onClick={handleSubmit}
+            disabled={loading} // Disable button when loading
+            loading={loading} // Show loading spinner
           >
-            Reserve
+            {loading ? "Processing..." : "Reserve"} {/* Change button text */}
           </Button>
         </div>
       </Card>
-      <ReceiptModal
+      {/* <InvoiceModal
         visible={isReceiptVisible}
         onClose={() => setIsReceiptVisible(false)}
         reservationData={formData}
+      /> */}
+
+      <InvoiceModal
+        visible={isInvoiceModalVisible}
+        onCancel={() => setInvoiceModalVisible(false)}
+        resourceId={newResourceId}
+        token={token}
+        hotelName={hotelName}
       />
     </Layout>
   );

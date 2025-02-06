@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button, Tabs, Card, message } from "antd";
 import { useSession } from "@/hooks/useSession";
+import { useNavigate } from "react-router-dom";
 import StayInformation from "./formFields/StayInfo";
 import GuestForm from "./formFields/GuestForm";
 import BillingInformation from "./formFields/BillingInformation";
@@ -10,10 +11,9 @@ import { validateReservationForm } from "@/utils/validation";
 import { createReservation } from "@/hooks/useReservation";
 import ReceiptModal from "@/components/modals/ReceiptModal";
 
-
 const ReservationForm = () => {
+  const navigate = useNavigate();
   const { session } = useSession();
-  // console.log("session", session?.user?.userId);
   const token = session?.token;
   const hotelId = session?.user?.hotelId;
   const userId = session?.user?.userId;
@@ -31,6 +31,8 @@ const ReservationForm = () => {
           roomPrice: 0,
         },
       ],
+      numberOfNights: 0,
+      totalPrice: 0,
     },
     guestDetails: [],
     billingDetails: {},
@@ -60,12 +62,28 @@ const ReservationForm = () => {
   const handleChange = (section, value) => {
     if (section === "reservationData") {
       setReservationData(value);
+
+      setFormData((prev) => ({
+        ...prev,
+        reservationDetails: {
+          ...prev.reservationDetails,
+          numberOfNights: value.numberOfNights,
+          totalPrice: value.totalPrice,
+        },
+      }));
     } else if (section === "rooms") {
+      // console.log("section rooms", value);
+      const totalPrice = value.reduce(
+        (acc, room) =>
+          acc + room.roomPrice * formData.reservationDetails.numberOfNights,
+        0
+      );
       setFormData((prev) => ({
         ...prev,
         reservationDetails: {
           ...prev.reservationDetails,
           rooms: value,
+          totalPrice: totalPrice,
         },
       }));
     } else {
@@ -75,6 +93,26 @@ const ReservationForm = () => {
       }));
     }
   };
+
+  // const handleSubmit = async (event) => {
+  //   event.preventDefault();
+  //   // Perform form submission logic here
+  //   if (validateReservationForm(formData)) {
+  //     const payload = {
+  //       guestDetails: formData.guestDetails,
+  //       reservationDetails: formData.reservationDetails,
+  //       billingDetails: formData.billingDetails,
+  //       createdBy: userId,
+  //       role: role,
+  //     };
+  //     try {
+  //       console.log(payload);
+  //       message.success("Reservation successfully submitted!");
+  //     } catch (error) {
+  //       message.error(error, "Failed to submit reservation!");
+  //     }
+  //   }
+  // };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -92,8 +130,10 @@ const ReservationForm = () => {
         const response = await createReservation(payload, token);
         if (response.statusCode === 200) {
           message.success("Reservation successfully submitted!");
-          if (formData.printOptions.printReceipt) {
+          if (formData.printOptions.printInvoice) {
             setIsReceiptVisible(true);
+          } else {
+            navigate("/pms/stay-view");
           }
         } else {
           message.error(

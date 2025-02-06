@@ -243,7 +243,7 @@ const GuestForm = ({ onChange }) => {
         </div>
       ))}
       <div
-        className="w-full flex items-center justify-end gap-2 text-appGreen cursor-pointer text-[14px]"
+        className="hidden w-full flex items-center justify-end gap-2 text-appGreen cursor-pointer text-[14px]"
         onClick={addGuest}
       >
         <FaPlusCircle />

@@ -6,7 +6,7 @@ import {
   EyeOutlined,
   EyeInvisibleOutlined,
 } from "@ant-design/icons";
-import { Button } from "antd";
+// import { Button } from "antd";
 import { Spin } from "antd"; // Import Spin for loading spinner
 import AuthAside from "@/components/AuthAside"; // Adjust the path based on your folder structure
 import Logo from "@/components/Logo"; // Adjust the path based on your folder structure
@@ -149,14 +149,25 @@ export default function LoginPage() {
                   />
                 </div>
 
-                <Button
+                {/* <Button
                   onClick={handleLogin}
                   className="w-full bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 "
                   size="lg"
                   loading={loading}
                 >
                   Login
-                </Button>
+                </Button> */}
+
+                <button
+                  onClick={handleLogin}
+                  type="submit"
+                  disabled={loading}
+                  className={`w-full p-2 rounded bg-teal-700 text-white hover:bg-teal-900 transition ${
+                    loading ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
+                >
+                  {loading ? "Processing..." : "Login"}
+                </button>
                 <div className="flex items-center justify-end">
                   {/* <div className="flex items-center space-x-2">
                     <Checkbox
@@ -172,7 +183,7 @@ export default function LoginPage() {
                     </label>
                   </div> */}
                   <Link
-                    to="/forgot-password"
+                    to="/auth/forgot-password"
                     className="text-sm text-muted-foreground hover:underline"
                   >
                     Forgot password

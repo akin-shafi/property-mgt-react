@@ -291,7 +291,7 @@ const StayInformation = ({ data, onChange }) => {
             )}
           </div>
         ))}
-        <div className="w-full flex items-center justify-end gap-2 text-appOrange text-[14px]">
+        <div className="hidden w-full flex items-center justify-end gap-2 text-appOrange text-[14px]">
           <FaPlusCircle />
           <span
             className="cursor-pointer hover:underline hover:text-black"

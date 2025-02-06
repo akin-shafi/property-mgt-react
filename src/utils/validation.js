@@ -34,7 +34,7 @@ export const validateReservationForm = (formData) => {
 
   // Validate guestDetails
   const { guestDetails } = formData;
-  console.log("guestDetails", guestDetails);
+  // console.log("guestDetails", guestDetails);
   if (!guestDetails || guestDetails.length === 0) {
     errors.push("At least one guest must be added.");
   } else {
@@ -113,14 +113,14 @@ export const validateReservationForm = (formData) => {
   });
 
   // Validate printOptions
-  const { printOptions } = formData;
-  if (
-    !printOptions.printGuestCard &&
-    !printOptions.printFolio &&
-    !printOptions.printReceipt
-  ) {
-    errors.push("At least one print option must be selected.");
-  }
+  // const { printOptions } = formData;
+  // if (
+  //   !printOptions.printGuestCard &&
+  //   !printOptions.printFolio &&
+  //   !printOptions.printReceipt
+  // ) {
+  //   errors.push("At least one print option must be selected.");
+  // }
 
   // Return errors
   if (errors.length > 0) {
