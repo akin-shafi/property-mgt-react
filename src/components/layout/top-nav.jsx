@@ -2,8 +2,10 @@ import { useState, useEffect, useRef } from "react";
 import { Bell, MessageSquare, ChevronDown } from "lucide-react";
 import { useNavigation } from "../../context/NavigationContext";
 import { useSession } from "../../hooks/useSession";
+import { useNavigate } from "react-router-dom";
 
 export function TopNav() {
+  const navigate = useNavigate();
   const { session, logout } = useSession();
   const { toggleSidebar } = useNavigation();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -52,6 +54,13 @@ export function TopNav() {
   const handleLogout = () => {
     logout();
   };
+
+  useEffect(() => {
+    // Redirect to login page if session is not set
+    if (!session) {
+      navigate("/login");
+    }
+  }, [session, navigate]);
 
   if (!session || !session.user) {
     return null; // Or you can return a fallback UI, like a loading spinner or message

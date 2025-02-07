@@ -10,6 +10,7 @@ import Layout from "@/components/utils/Layout";
 import { validateReservationForm } from "@/utils/validation";
 import { createReservation } from "@/hooks/useReservation";
 import InvoiceModal from "@/components/modals/InvoiceModal";
+import dayjs from "dayjs";
 
 const ReservationForm = () => {
   const navigate = useNavigate();
@@ -107,6 +108,7 @@ const ReservationForm = () => {
         billingDetails: formData.billingDetails,
         createdBy: userId,
         role: role,
+        createdAt: dayjs().format("YYYY-MM-DD HH:mm:ss"),
       };
 
       try {
@@ -187,7 +189,7 @@ const ReservationForm = () => {
           <Button htmlType="button">Cancel</Button>
           <Button
             type="primary"
-            className="bg-appBlue hover:bg-appBlueLight"
+            className="bg-appBlue hover:bg-appBlueLight hover:text-white"
             size="lg"
             onClick={handleSubmit}
             disabled={loading} // Disable button when loading

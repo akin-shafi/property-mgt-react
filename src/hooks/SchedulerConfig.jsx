@@ -1,3 +1,6 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable react-hooks/rules-of-hooks */
+import { useEffect, useState } from "react";
 import { Modal } from "antd";
 import { DayPilot } from "daypilot-pro-react"; // DayPilot Scheduler
 
@@ -12,8 +15,12 @@ export const getSchedulerConfig = (
   setViewPaymentModalVisible,
   setSelectedResourceId // New function to pass the resourceId to modal
 ) => {
-  const sevenDaysAgo = new Date();
-  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+  const [loading, setLoading] = useState(false);
+
+  const firstDayOfWeek = new Date();
+  const dayOfWeek = firstDayOfWeek.getDay(); // Get the current day of the week (0 for Sunday, 6 for Saturday)
+  const diff = firstDayOfWeek.getDate() - dayOfWeek; // Calculate the difference to the first day of the week
+  firstDayOfWeek.setDate(diff);
 
   // Function to handle creating a new reservation
   const handleCreateNew = (args) => {
@@ -40,18 +47,28 @@ export const getSchedulerConfig = (
     });
   };
 
+  const handleDivClick = (resourceId) => {
+    setLoading(true); // Show processing indicator
+    setSelectedResourceId(resourceId); // Pass resourceId to the modal
+    setViewPaymentModalVisible(true); // Open the View Payment Modal
+    setTimeout(() => {
+      setLoading(false); // Hide processing indicator after 2 seconds
+    }, 1000);
+  };
+
   return {
     timeHeaders: [
       { groupBy: "Month", format: "MMMM yyyy" },
+      { groupBy: "Day", format: "ddd" }, // Adding day of the week
       { groupBy: "Day", format: "d" },
     ],
     eventHeight: 30,
     bubble: new DayPilot.Bubble({}),
     scale: "Day",
     treeEnabled: true,
-    days: 30, // Adjusted for a 30-day view
-    eventBorderRadius: "1px",
-    startDate: sevenDaysAgo.toISOString().split("T")[0],
+    days: 31, // Adjusted for a 30-day view
+    eventBorderRadius: "5px 10px",
+    startDate: firstDayOfWeek.toISOString().split("T")[0],
 
     onTimeRangeSelected: async (args) => {
       if (args.resource !== args.resourceRoot) {
@@ -64,13 +81,14 @@ export const getSchedulerConfig = (
 
       args.element = (
         <div
-          className="flex justify-between w-full items-center"
-          onClick={() => {
-            setSelectedResourceId(resourceId); // Pass resourceId to the modal
-            setViewPaymentModalVisible(true); // Open the View Payment Modal
-          }}
+          className="flex justify-between w-full items-center hover:text-teal-900"
+          onClick={() => handleDivClick(resourceId)}
         >
-          <span>{args.e.data.text}</span>
+          {loading ? (
+            <span>Processing...</span>
+          ) : (
+            <span>{args.e.data.text}</span>
+          )}
         </div>
       );
     },

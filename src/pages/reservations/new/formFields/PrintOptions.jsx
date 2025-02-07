@@ -7,7 +7,7 @@ const PrintOptions = ({ onChange }) => {
     // printGuestCard: false,
     // suppressRate: false,
     // printFolio: false,
-    printInvoice: true,
+    printInvoice: false,
   });
 
   useEffect(() => {

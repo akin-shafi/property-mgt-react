@@ -56,11 +56,11 @@ export const fetchActivityOptions = async (token) => {
 };
 
 export const activityColors = {
-  ["Arrival"]: { barColor: "#4caf50", backColor: "#a5d6a7" }, // Green for Arrival
-  ["Check-in"]: { barColor: "#1976d2", backColor: "#90caf9" }, // Blue for Check-in
-  ["Check-out"]: { barColor: "#ff5722", backColor: "#ffccbc" }, // Orange for Check-out
-  ["Due-out"]: { barColor: "#9e9e9e", backColor: "#e0e0e0" }, // Gray for Due-out
-  ["Bookings"]: { barColor: "#673ab7", backColor: "#d1c4e9" }, // Purple for Booking
+  ["pending_arrival"]: { barColor: "#4caf50", backColor: "#a5d6a7" }, // Green for Arrival
+  ["check_in"]: { barColor: "#1976d2", backColor: "#90caf9" }, // Blue for Check-in
+  ["check_out"]: { barColor: "#ff5722", backColor: "#ffccbc" }, // Orange for Check-out
+  ["due_out"]: { barColor: "#9e9e9e", backColor: "#e0e0e0" }, // Gray for Due-out
+  ["bookings"]: { barColor: "#673ab7", backColor: "#d1c4e9" }, // Purple for Booking
   ["Cancelled"]: { barColor: "#f44336", backColor: "#ffcdd2" }, // Red for Cancelled
 };
 
@@ -154,6 +154,29 @@ export const createReservation = async (data, token) => {
   try {
     const response = await fetch(`${API_BASE_URL}/api/reservations`, {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || "Failed to create reservation");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error creating reservation:", error);
+    throw error;
+  }
+};
+
+export const updateReservationStatus = async (data, id, token) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/reservations/${id}`, {
+      method: "PUT",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,

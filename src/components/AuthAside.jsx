@@ -8,14 +8,14 @@ export default function AuthAside() {
       <div className="relative z-20">
         <div className="mb-12">
           <h1 className="text-2xl font-light text-orange-500 tracking-wide ">
-            SuiteFlow
+            HotelPro.space
           </h1>
           {/* <div className=" text-sm">Property Management System</div> */}
         </div>
         <div className="space-y-6">
           {/* <h2 className="text-2xl font-bold">
             Welcome to <br />
-            HotelFlow 
+            HotelPro.space 
           </h2> */}
           <p className="text-lg text-white/80">
             Simplifying property management with a comprehensive, easy-to-use

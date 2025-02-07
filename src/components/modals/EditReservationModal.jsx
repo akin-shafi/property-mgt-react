@@ -98,7 +98,7 @@ const EditReservationModal = ({ visible, onCancel, resourceId, token }) => {
       numberOfNights,
       reservationStatus: reservationDetails.reservationStatus,
       reservationType: reservationDetails.reservationType,
-      updatedAt: dayjs().format("YYYY-MM-DDTHH:mm:ss.SSS[Z]"),
+      updatedAt: dayjs().format("YYYY-MM-DD HH:mm:ss"),
     };
     console.log("Payload to be sent:", payload);
     // Save logic here

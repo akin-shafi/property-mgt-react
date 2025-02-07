@@ -214,8 +214,8 @@ const StayInformation = ({ data, onChange }) => {
               value={reservationStatus}
               onChange={handleReservationStatusChange}
             >
-              <Option value="pending">Pending</Option>
-              <Option value="confirmed">Confirmed</Option>
+              <Option value="pending">Pending Arrival</Option>
+              <Option value="confirmed">Check-In</Option>
             </Select>
           </div>
         </div>

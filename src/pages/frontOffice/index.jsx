@@ -5,9 +5,9 @@ import { useSession } from "@/hooks/useSession";
 import Layout from "@/components/utils/Layout";
 import { DayPilotScheduler } from "daypilot-pro-react"; // DayPilot Scheduler
 import { getSchedulerConfig } from "@/hooks/SchedulerConfig";
-import { hotelBookings } from "@/hooks/useReservation";
+import { hotelBookings, updateReservationStatus } from "@/hooks/useReservation";
 import { fetchHotelRoomsWithPrice } from "@/hooks/useAction";
-import { Spin } from "antd";
+import { Spin, message } from "antd";
 // import ViewPaymentModal from "@/components/modals/ViewPaymentModal";
 import ModalDrawer from "@/components/modals/ModalDrawer";
 
@@ -16,8 +16,10 @@ import EditReservationModal from "@/components/modals/EditReservationModal";
 import InvoiceModal from "@/components/modals/InvoiceModal";
 
 const Scheduler = () => {
+  const navigate = useNavigate();
   const { session } = useSession();
-  const token = session.token;
+  const token = session?.token;
+
   const hotelId = session?.user?.hotelId;
   const hotelName = session?.user?.hotelName;
   const [hotelRooms, setHotelRooms] = useState([]);
@@ -36,8 +38,6 @@ const Scheduler = () => {
     useState(false); // Example modal state
   const [selectedResourceId, setSelectedResourceId] = useState(null); // Store resourceId
   const [drawerOpen, setDrawerOpen] = useState(false);
-
-  const navigate = useNavigate();
 
   // Fetch and format room data
   useEffect(() => {
@@ -119,13 +119,38 @@ const Scheduler = () => {
     setDrawerOpen((prev) => !prev);
   };
 
-  const handleOpenEditReservationModal = (buttonName) => {
-    // console.log(`Button clicked: ${buttonName}`);
+  const handleOpenEditReservationModal = async (buttonName) => {
     setViewDetailsModalVisible(false);
-    if (buttonName === "Edit") {
-      setEditReservationVisible(true);
-    } else if (buttonName === "Invoice") {
-      setInvoiceModalVisible(true);
+
+    const updateStatus = async (data) => {
+      try {
+        await updateReservationStatus(data, selectedResourceId, token);
+        message.success("Status updated successfully!", 3);
+        const updatedReservations = await hotelBookings(hotelId, token);
+        setHotelReservations(updatedReservations);
+      } catch {
+        message.error("Error updating reservation status.", 3);
+      }
+    };
+
+    const actions = {
+      "Check-In": async () =>
+        updateStatus({
+          activity: "check_in",
+          reservationStatus: "confirmed",
+        }),
+      "Undo Check in": async () =>
+        updateStatus({
+          activity: "pending_arrival",
+          reservationStatus: "pending",
+        }),
+      Edit: () => setEditReservationVisible(true),
+      Invoice: () => setInvoiceModalVisible(true),
+      "Check-Out": () => toggleDrawer(),
+    };
+
+    if (actions[buttonName]) {
+      await actions[buttonName]();
     }
   };
 
@@ -149,11 +174,7 @@ const Scheduler = () => {
         resourceId={selectedResourceId} // Pass the selected resourceId to modal
         token={token}
       /> */}
-      <ModalDrawer
-        open={drawerOpen}
-        onClose={toggleDrawer}
-        resourceId={selectedResourceId}
-      />
+
       <ViewDetailsModal
         visible={isViewDetailsModalVisible}
         onCancel={() => setViewDetailsModalVisible(false)}
@@ -174,6 +195,13 @@ const Scheduler = () => {
         resourceId={selectedResourceId} // Pass the selected resourceId to modal
         token={token}
         hotelName={hotelName}
+      />
+
+      <ModalDrawer
+        open={drawerOpen}
+        onClose={toggleDrawer}
+        resourceId={selectedResourceId}
+        token={token}
       />
     </Layout>
   );

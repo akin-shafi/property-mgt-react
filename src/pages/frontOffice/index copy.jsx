@@ -5,15 +5,24 @@ import { useSession } from "@/hooks/useSession";
 import Layout from "@/components/utils/Layout";
 import { DayPilotScheduler } from "daypilot-pro-react"; // DayPilot Scheduler
 import { getSchedulerConfig } from "@/hooks/SchedulerConfig";
-import { hotelBookings } from "@/hooks/useReservation";
+import { hotelBookings, updateReservationStatus } from "@/hooks/useReservation";
 import { fetchHotelRoomsWithPrice } from "@/hooks/useAction";
-import { Spin } from "antd";
+import { Spin, message } from "antd";
+// import ViewPaymentModal from "@/components/modals/ViewPaymentModal";
 import ModalDrawer from "@/components/modals/ModalDrawer";
 
+import ViewDetailsModal from "@/components/modals/ViewDetailsModal";
+import EditReservationModal from "@/components/modals/EditReservationModal";
+import InvoiceModal from "@/components/modals/InvoiceModal";
+import CheckOutModal from "@/components/modals/CheckOutModal";
+
 const Scheduler = () => {
+  const navigate = useNavigate();
   const { session } = useSession();
-  const token = session.token;
+  const token = session?.token;
+
   const hotelId = session?.user?.hotelId;
+  const hotelName = session?.user?.hotelName;
   const [hotelRooms, setHotelRooms] = useState([]);
   const [hotelReservations, setHotelReservations] = useState([]);
   const [scheduler, setScheduler] = useState(null);
@@ -21,11 +30,17 @@ const Scheduler = () => {
   const [resources, setResources] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  // const [isViewPaymentModalVisible, setViewPaymentModalVisible] =
+  //   useState(false); // Modal state
+  const [isEditReservationVisible, setEditReservationVisible] = useState(false); // Modal state
+  const [isInvoiceModalVisible, setInvoiceModalVisible] = useState(false); // Modal state
+  const [isCheckOutModal, setCheckOutModal] = useState(false);
+  const [isViewDetailsModalVisible, setViewDetailsModalVisible] =
+    useState(false); // Example modal state
+  const [selectedResourceId, setSelectedResourceId] = useState(null); // Store resourceId
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [selectedResourceId, setSelectedResourceId] = useState(null);
 
-  const navigate = useNavigate();
-
+  // Fetch and format room data
   useEffect(() => {
     const fetchRoomData = async () => {
       setLoading(true);
@@ -33,6 +48,7 @@ const Scheduler = () => {
 
       try {
         const hotelData = await fetchHotelRoomsWithPrice(hotelId, token);
+        // console.log("hotelData:--", hotelData);
         const formattedRooms = hotelData.map((room) => ({
           id: room.roomName,
           name: `Room ${room.roomName}`,
@@ -54,6 +70,7 @@ const Scheduler = () => {
     }
   }, [hotelId, token]);
 
+  // Fetch and format reservation data
   useEffect(() => {
     const fetchReservationData = async () => {
       setLoading(true);
@@ -61,6 +78,7 @@ const Scheduler = () => {
 
       try {
         const reservationData = await hotelBookings(hotelId, token);
+        console.log("reservationData today", reservationData);
         setHotelReservations(reservationData);
       } catch (err) {
         setError(err.message || "Failed to fetch reservation data.");
@@ -74,10 +92,12 @@ const Scheduler = () => {
     }
   }, [hotelId, token]);
 
+  // Initialize scheduler once it's available
   useEffect(() => {
     if (scheduler) {
       setEvents(hotelReservations);
       setResources(hotelRooms);
+
       const sevenDaysAgo = new Date();
       sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
       scheduler.scrollTo(sevenDaysAgo.toISOString().split("T")[0]);
@@ -90,9 +110,53 @@ const Scheduler = () => {
     events,
     resources,
     navigate,
-    setDrawerOpen, // Open drawer instead of modal
-    setSelectedResourceId
+    // setViewPaymentModalVisible,
+    setViewDetailsModalVisible,
+    // setEditReservationVisible,
+    setSelectedResourceId // Pass the setSelectedResourceId function to update the resourceId
   );
+
+  const toggleDrawer = () => {
+    setDrawerOpen((prev) => !prev);
+  };
+
+  const handleOpenEditReservationModal = async (buttonName) => {
+    setViewDetailsModalVisible(false);
+
+    const updateStatus = async (data) => {
+      try {
+        await updateReservationStatus(data, selectedResourceId, token);
+        message.success("Status updated successfully!", 3);
+        const updatedReservations = await hotelBookings(hotelId, token);
+        setHotelReservations(updatedReservations);
+      } catch {
+        message.error("Error updating reservation status.", 3);
+      }
+    };
+
+    const actions = {
+      "Check-In": {
+        activity: "check_in",
+        reservationStatus: "confirmed",
+      },
+      "Undo Check in": {
+        activity: "pending_arrival",
+        reservationStatus: "pending",
+      },
+
+      Edit: () => setEditReservationVisible(true),
+      Invoice: () => setInvoiceModalVisible(true),
+      CheckOut: () => setCheckOutModal(true),
+    };
+
+    if (actions[buttonName]) {
+      if (typeof actions[buttonName] === "function") {
+        actions[buttonName]();
+      } else {
+        updateStatus(actions[buttonName]);
+      }
+    }
+  };
 
   return (
     <Layout>
@@ -107,13 +171,45 @@ const Scheduler = () => {
           />
         </main>
       </Spin>
-
-      {/* Drawer */}
+      {/* Modals */}
+      {/* <ViewPaymentModal
+        visible={isViewPaymentModalVisible}
+        onCancel={() => setViewPaymentModalVisible(false)}
+        resourceId={selectedResourceId} // Pass the selected resourceId to modal
+        token={token}
+      /> */}
       <ModalDrawer
         open={drawerOpen}
-        onClose={() => setDrawerOpen(false)}
-        pageTitle={`Reservation Details `}
+        onClose={toggleDrawer}
         resourceId={selectedResourceId}
+      />
+      <ViewDetailsModal
+        visible={isViewDetailsModalVisible}
+        onCancel={() => setViewDetailsModalVisible(false)}
+        onOtherModal={(buttonName) =>
+          handleOpenEditReservationModal(buttonName)
+        }
+        resourceId={selectedResourceId}
+        token={token}
+      />
+      <EditReservationModal
+        visible={isEditReservationVisible}
+        onCancel={() => setEditReservationVisible(false)}
+        resourceId={selectedResourceId} // Pass the selected resourceId to modal
+      />
+      <InvoiceModal
+        visible={isInvoiceModalVisible}
+        onCancel={() => setInvoiceModalVisible(false)}
+        resourceId={selectedResourceId} // Pass the selected resourceId to modal
+        token={token}
+        hotelName={hotelName}
+      />
+
+      <CheckOutModal
+        visible={isCheckOutModal}
+        onCancel={() => setCheckOutModal(false)}
+        resourceId={selectedResourceId} // Pass the selected resourceId to modal
+        token={token}
       />
     </Layout>
   );

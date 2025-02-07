@@ -49,9 +49,9 @@ const InvoiceModal = ({ visible, onCancel, resourceId, token, hotelName }) => {
             setGrandTotal(parseFloat(billingDetails.grandTotal) || 0);
 
             setReservationDetails({
-              createdAt: dayjs(details.createdAt)
-                .tz("Africa/Lagos")
-                .format("MMM DD, YYYY"),
+              createdAt: dayjs(details.createdAt).format(
+                "MMM DD, YYYY HH:mm:ss"
+              ),
               checkInDate: dayjs(details.checkInDate).format("MMM DD, YYYY"),
               checkOutDate: dayjs(details.checkOutDate).format("MMM DD, YYYY"),
               reservationType: details.reservationType,
@@ -156,6 +156,9 @@ const InvoiceModal = ({ visible, onCancel, resourceId, token, hotelName }) => {
     `);
     printWindow.document.close();
   };
+  if (loading) {
+    return "Loading...";
+  }
 
   return (
     <Modal
