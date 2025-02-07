@@ -47,8 +47,12 @@ export default function ModalDrawer({
           setGrandTotal(Number.parseFloat(billing.grandTotal));
 
           const filteredData = {
-            checkInDate: dayjs(reservationDetails.checkInDate),
-            checkOutDate: dayjs(reservationDetails.checkOutDate),
+            checkInDate: dayjs(reservationDetails.checkInDate).format(
+              "MMM DD, YYYY"
+            ),
+            checkOutDate: dayjs(reservationDetails.checkOutDate).format(
+              "MMM DD, YYYY"
+            ),
             reservationType: reservationDetails.reservationType,
             reservationStatus: reservationDetails.reservationStatus,
             additionalNotes: reservationDetails.additionalNotes || "",
@@ -115,57 +119,34 @@ export default function ModalDrawer({
                         NGN {grandTotal.toFixed(2)}
                       </td>
                     </tr>
-                    <tr className="border-b">
-                      <td className="py-2">Check-in Date:</td>
-                      <td className="text-right">
-                        <Form.Item name="checkInDate" noStyle>
-                          <DatePicker
-                            disabled
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 disabled:bg-gray-100"
-                          />
-                        </Form.Item>
-                      </td>
-                    </tr>
-                    <tr className="border-b">
-                      <td className="py-2">Check-out Date:</td>
-                      <td className="text-right">
-                        <Form.Item name="checkOutDate" noStyle>
-                          <DatePicker
-                            disabled
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 disabled:bg-gray-100"
-                          />
-                        </Form.Item>
-                      </td>
-                    </tr>
-                    <tr className="border-b">
-                      <td className="py-2">Reservation Type:</td>
-                      <td className="text-right">
-                        <Form.Item name="reservationType" noStyle>
-                          <Input
-                            disabled
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 disabled:bg-gray-100"
-                          />
-                        </Form.Item>
-                      </td>
-                    </tr>
-                    <tr className="border-b">
-                      <td className="py-2">Reservation Status:</td>
-                      <td className="text-right">
-                        <Form.Item name="reservationStatus" noStyle>
-                          <Select
-                            disabled
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 disabled:bg-gray-100"
-                          >
-                            <Select.Option value="CHECKED_IN">
-                              Checked In
-                            </Select.Option>
-                            <Select.Option value="CHECKED_OUT">
-                              Checked Out
-                            </Select.Option>
-                          </Select>
-                        </Form.Item>
-                      </td>
-                    </tr>
+                    {reservationDetails && (
+                      <>
+                        <tr className="border-b">
+                          <td className="py-2">Check-in Date:</td>
+                          <td className="text-right">
+                            {reservationDetails.checkInDate}
+                          </td>
+                        </tr>
+                        <tr className="border-b">
+                          <td className="py-2">Check-out Date:</td>
+                          <td className="text-right">
+                            {reservationDetails.checkOutDate}
+                          </td>
+                        </tr>
+                        <tr className="border-b">
+                          <td className="py-2">Reservation Type:</td>
+                          <td className="text-right">
+                            {reservationDetails.reservationType}
+                          </td>
+                        </tr>
+                        <tr className="border-b">
+                          <td className="py-2">Reservation Status:</td>
+                          <td className="text-right">
+                            {reservationDetails.reservationStatus}
+                          </td>
+                        </tr>
+                      </>
+                    )}
                   </tbody>
                 </table>
               </div>
