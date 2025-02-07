@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { sendResetPasswordEmail } from "@/hooks/useAuth"; // Adjust path as necessary
-import WhiteLogo from "@/components/whiteLogo";
+import Logo from "@/components/Logo";
 
 const ForgotPassword = () => {
   const { email: emailFromRoute } = useParams(); // Directly destructuring email from params
@@ -47,7 +47,7 @@ const ForgotPassword = () => {
       <div className="bg-white text-black rounded-lg shadow-lg p-8 max-w-md w-full">
         <h4 className="text-xl font-bold mb-4 text-center">
           <div className="text-center mb-6">
-            <WhiteLogo />
+            <Logo />
             {/* <h1 className="text-1xl font-bold text-appGreen">Baseline Study</h1> */}
           </div>
         </h4>
