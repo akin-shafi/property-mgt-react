@@ -105,7 +105,6 @@ export default function ModalDrawer({
                       <td className="py-2">Price per night:</td>
                       <td className="text-right">NGN {roomPrice.toFixed(2)}</td>
                     </tr>
-
                     <tr className="border-b">
                       <td className="py-2">Number of nights:</td>
                       <td className="text-right"> {numberOfNights}</td>
@@ -116,56 +115,61 @@ export default function ModalDrawer({
                         NGN {grandTotal.toFixed(2)}
                       </td>
                     </tr>
+                    <tr className="border-b">
+                      <td className="py-2">Check-in Date:</td>
+                      <td className="text-right">
+                        <Form.Item name="checkInDate" noStyle>
+                          <DatePicker
+                            disabled
+                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 disabled:bg-gray-100"
+                          />
+                        </Form.Item>
+                      </td>
+                    </tr>
+                    <tr className="border-b">
+                      <td className="py-2">Check-out Date:</td>
+                      <td className="text-right">
+                        <Form.Item name="checkOutDate" noStyle>
+                          <DatePicker
+                            disabled
+                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 disabled:bg-gray-100"
+                          />
+                        </Form.Item>
+                      </td>
+                    </tr>
+                    <tr className="border-b">
+                      <td className="py-2">Reservation Type:</td>
+                      <td className="text-right">
+                        <Form.Item name="reservationType" noStyle>
+                          <Input
+                            disabled
+                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 disabled:bg-gray-100"
+                          />
+                        </Form.Item>
+                      </td>
+                    </tr>
+                    <tr className="border-b">
+                      <td className="py-2">Reservation Status:</td>
+                      <td className="text-right">
+                        <Form.Item name="reservationStatus" noStyle>
+                          <Select
+                            disabled
+                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 disabled:bg-gray-100"
+                          >
+                            <Select.Option value="CHECKED_IN">
+                              Checked In
+                            </Select.Option>
+                            <Select.Option value="CHECKED_OUT">
+                              Checked Out
+                            </Select.Option>
+                          </Select>
+                        </Form.Item>
+                      </td>
+                    </tr>
                   </tbody>
                 </table>
               </div>
-              <Form form={form} className="space-y-4" onFinish={handleCheckout}>
-                <div className="flex flex-wrap -mx-2">
-                  <div className="w-full md:w-1/2 px-2 mb-4 md:mb-0">
-                    <Form.Item name="checkInDate" label="Check-in Date">
-                      <DatePicker
-                        disabled
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 disabled:bg-gray-100"
-                      />
-                    </Form.Item>
-                  </div>
-                  <div className="w-full md:w-1/2 px-2 mb-4 md:mb-0">
-                    <Form.Item name="checkOutDate" label="Check-out Date">
-                      <DatePicker
-                        disabled
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 disabled:bg-gray-100"
-                      />
-                    </Form.Item>
-                  </div>
-                </div>
-                <div className="flex flex-wrap -mx-2">
-                  <div className="w-full md:w-1/2 px-2 mb-4 md:mb-0">
-                    <Form.Item name="reservationType" label="Reservation Type">
-                      <Input
-                        disabled
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 disabled:bg-gray-100"
-                      />
-                    </Form.Item>
-                  </div>
-                  <div className="w-full md:w-1/2 px-2 mb-4 md:mb-0">
-                    <Form.Item
-                      name="reservationStatus"
-                      label="Reservation Status"
-                    >
-                      <Select
-                        disabled
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 disabled:bg-gray-100"
-                      >
-                        <Select.Option value="CHECKED_IN">
-                          Checked In
-                        </Select.Option>
-                        <Select.Option value="CHECKED_OUT">
-                          Checked Out
-                        </Select.Option>
-                      </Select>
-                    </Form.Item>
-                  </div>
-                </div>
+              <Form form={form} onFinish={handleCheckout}>
                 <div className="flex flex-wrap -mx-2">
                   <div className="w-full px-2">
                     <Form.Item name="additionalNotes" label="Additional Notes">
