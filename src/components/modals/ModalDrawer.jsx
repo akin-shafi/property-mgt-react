@@ -27,6 +27,8 @@ export default function ModalDrawer({
   const [reservationDetails, setReservationDetails] = useState(null);
   const [roomName, setRoomName] = useState("");
   const [roomPrice, setRoomPrice] = useState(0);
+  const [amountPaid, setAmountPaid] = useState(0);
+  const [balance, setBalance] = useState("0.00");
   const [numberOfNights, setNumberOfNights] = useState(0);
   const [grandTotal, setGrandTotal] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -38,13 +40,15 @@ export default function ModalDrawer({
         try {
           const data = await fetchReservationById(resourceId, token);
           const reservationDetails = data.reservationDetails;
-          const billing = data.reservationDetails.billing[0];
+          const billingDetails = data.reservationDetails.billing[0];
           const roomDetails = data.reservationDetails.bookedRooms[0];
 
+          setAmountPaid(billingDetails.amountPaid || "N/A");
+          setBalance(billingDetails.balance || "N/A");
           setRoomName(roomDetails.roomName);
           setRoomPrice(Number.parseFloat(roomDetails.roomPrice));
           setNumberOfNights(reservationDetails.numberOfNights);
-          setGrandTotal(Number.parseFloat(billing.grandTotal));
+          setGrandTotal(Number.parseFloat(billingDetails.grandTotal));
 
           const filteredData = {
             checkInDate: dayjs(reservationDetails.checkInDate).format(
@@ -72,6 +76,11 @@ export default function ModalDrawer({
   }, [open, resourceId, token, form]);
 
   const handleCheckout = async (values) => {
+    if (parseFloat(values.amountPaid) !== parseFloat(balance)) {
+      message.error("The amount entered does not match the balance left");
+      return;
+    }
+
     console.log("Checkout values:", values);
     // Implement the checkout logic here
     // You can make an API call to update the reservation status
@@ -147,10 +156,60 @@ export default function ModalDrawer({
                         </tr>
                       </>
                     )}
+                    <tr className="border-b">
+                      <td className="py-2">Amount Paid:</td>
+                      <td className="text-right">NGN {amountPaid}</td>
+                    </tr>
+                    <tr className="border-b">
+                      <td className="py-2">Balance:</td>
+                      <td className="text-right">NGN {balance}</td>
+                    </tr>
                   </tbody>
                 </table>
               </div>
+
               <Form form={form} onFinish={handleCheckout}>
+                {balance !== "0.00" && (
+                  <div className="flex flex-wrap -mx-2">
+                    <div className="w-full px-2">
+                      <Form.Item
+                        name="amountPaid"
+                        label="Amount Paid"
+                        rules={[
+                          {
+                            required: true,
+                            message: "Please enter the amount paid",
+                          },
+                        ]}
+                      >
+                        <Input
+                          type="number"
+                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                        />
+                      </Form.Item>
+                    </div>
+                    <div className="w-full px-2">
+                      <Form.Item
+                        name="paymentMode"
+                        label="Payment Mode"
+                        rules={[
+                          {
+                            required: true,
+                            message: "Please select the payment mode",
+                          },
+                        ]}
+                      >
+                        <Select className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                          <Select.Option value="cash">Cash</Select.Option>
+                          <Select.Option value="card">Card</Select.Option>
+                          <Select.Option value="transfer">
+                            Transfer
+                          </Select.Option>
+                        </Select>
+                      </Form.Item>
+                    </div>
+                  </div>
+                )}
                 <div className="flex flex-wrap -mx-2">
                   <div className="w-full px-2">
                     <Form.Item name="additionalNotes" label="Additional Notes">
