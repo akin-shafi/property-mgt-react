@@ -51,6 +51,7 @@ export default function ModalDrawer({
             checkOutDate: dayjs(reservationDetails.checkOutDate),
             reservationType: reservationDetails.reservationType,
             reservationStatus: reservationDetails.reservationStatus,
+            additionalNotes: reservationDetails.additionalNotes || "",
           };
 
           setReservationDetails(filteredData);
@@ -118,73 +119,73 @@ export default function ModalDrawer({
                   </tbody>
                 </table>
               </div>
-              <form className="space-y-4" onSubmit={handleCheckout}>
+              <Form form={form} className="space-y-4" onFinish={handleCheckout}>
                 <div className="flex flex-wrap -mx-2">
                   <div className="w-full md:w-1/2 px-2 mb-4 md:mb-0">
-                    <label className="block text-sm font-medium text-gray-700">
-                      Check-in Date
-                    </label>
-                    <input
-                      type="text"
-                      disabled
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 disabled:bg-gray-100"
-                    />
+                    <Form.Item name="checkInDate" label="Check-in Date">
+                      <DatePicker
+                        disabled
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 disabled:bg-gray-100"
+                      />
+                    </Form.Item>
                   </div>
                   <div className="w-full md:w-1/2 px-2 mb-4 md:mb-0">
-                    <label className="block text-sm font-medium text-gray-700">
-                      Check-out Date
-                    </label>
-                    <input
-                      type="text"
-                      disabled
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 disabled:bg-gray-100"
-                    />
+                    <Form.Item name="checkOutDate" label="Check-out Date">
+                      <DatePicker
+                        disabled
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 disabled:bg-gray-100"
+                      />
+                    </Form.Item>
                   </div>
                 </div>
                 <div className="flex flex-wrap -mx-2">
                   <div className="w-full md:w-1/2 px-2 mb-4 md:mb-0">
-                    <label className="block text-sm font-medium text-gray-700">
-                      Reservation Type
-                    </label>
-                    <input
-                      type="text"
-                      disabled
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 disabled:bg-gray-100"
-                    />
+                    <Form.Item name="reservationType" label="Reservation Type">
+                      <Input
+                        disabled
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 disabled:bg-gray-100"
+                      />
+                    </Form.Item>
                   </div>
                   <div className="w-full md:w-1/2 px-2 mb-4 md:mb-0">
-                    <label className="block text-sm font-medium text-gray-700">
-                      Reservation Status
-                    </label>
-                    <select
-                      disabled
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 disabled:bg-gray-100"
+                    <Form.Item
+                      name="reservationStatus"
+                      label="Reservation Status"
                     >
-                      <option value="CHECKED_IN">Checked In</option>
-                      <option value="CHECKED_OUT">Checked Out</option>
-                    </select>
+                      <Select
+                        disabled
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 disabled:bg-gray-100"
+                      >
+                        <Select.Option value="CHECKED_IN">
+                          Checked In
+                        </Select.Option>
+                        <Select.Option value="CHECKED_OUT">
+                          Checked Out
+                        </Select.Option>
+                      </Select>
+                    </Form.Item>
                   </div>
                 </div>
                 <div className="flex flex-wrap -mx-2">
                   <div className="w-full px-2">
-                    <label className="block text-sm font-medium text-gray-700">
-                      Additional Notes
-                    </label>
-                    <textarea
-                      rows="4"
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                    ></textarea>
+                    <Form.Item name="additionalNotes" label="Additional Notes">
+                      <Input.TextArea
+                        rows={4}
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                      />
+                    </Form.Item>
                   </div>
                 </div>
                 <div className="flex justify-end mt-4">
-                  <button
-                    type="submit"
+                  <Button
+                    type="primary"
+                    htmlType="submit"
                     className="w-full md:w-auto inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                   >
                     Complete Check-out
-                  </button>
+                  </Button>
                 </div>
-              </form>
+              </Form>
             </>
           )}
         </div>
