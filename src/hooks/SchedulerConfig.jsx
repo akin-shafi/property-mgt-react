@@ -15,14 +15,13 @@ export const getSchedulerConfig = (
   setViewPaymentModalVisible,
   setSelectedResourceId // New function to pass the resourceId to modal
 ) => {
-  const [loading, setLoading] = useState(false);
+  const [loadingItems, setLoadingItems] = useState({}); // Track loading state for each item
 
   const firstDayOfWeek = new Date();
-  const dayOfWeek = firstDayOfWeek.getDay(); // Get the current day of the week (0 for Sunday, 6 for Saturday)
-  const diff = firstDayOfWeek.getDate() - dayOfWeek; // Calculate the difference to the first day of the week
+  const dayOfWeek = firstDayOfWeek.getDay();
+  const diff = firstDayOfWeek.getDate() - dayOfWeek;
   firstDayOfWeek.setDate(diff);
 
-  // Function to handle creating a new reservation
   const handleCreateNew = (args) => {
     confirm({
       title: "Create New Reservation",
@@ -48,25 +47,25 @@ export const getSchedulerConfig = (
   };
 
   const handleDivClick = (resourceId) => {
-    setLoading(true); // Show processing indicator
-    setSelectedResourceId(resourceId); // Pass resourceId to the modal
-    setViewPaymentModalVisible(true); // Open the View Payment Modal
+    setLoadingItems((prev) => ({ ...prev, [resourceId]: true })); // Set loading for specific item
+    setSelectedResourceId(resourceId);
+    setViewPaymentModalVisible(true);
     setTimeout(() => {
-      setLoading(false); // Hide processing indicator after 2 seconds
+      setLoadingItems((prev) => ({ ...prev, [resourceId]: false })); // Reset loading after timeout
     }, 1000);
   };
 
   return {
     timeHeaders: [
       { groupBy: "Month", format: "MMMM yyyy" },
-      { groupBy: "Day", format: "ddd" }, // Adding day of the week
+      { groupBy: "Day", format: "ddd" },
       { groupBy: "Day", format: "d" },
     ],
     eventHeight: 30,
     bubble: new DayPilot.Bubble({}),
     scale: "Day",
     treeEnabled: true,
-    days: 31, // Adjusted for a 30-day view
+    days: 31,
     eventBorderRadius: "5px 10px",
     startDate: firstDayOfWeek.toISOString().split("T")[0],
 
@@ -77,14 +76,13 @@ export const getSchedulerConfig = (
     },
 
     onBeforeEventDomAdd: (args) => {
-      const resourceId = args.e.data.id; // Assuming event data contains an 'id' field for reservationId
-
+      const resourceId = args.e.data.id;
       args.element = (
         <div
-          className="flex justify-between w-full items-center hover:text-teal-900"
+          className="flex justify-between w-full items-center hover-effect"
           onClick={() => handleDivClick(resourceId)}
         >
-          {loading ? (
+          {loadingItems[resourceId] ? (
             <span>Processing...</span>
           ) : (
             <span>{args.e.data.text}</span>
@@ -94,7 +92,6 @@ export const getSchedulerConfig = (
     },
 
     onAfterRender: () => {
-      // Hide the "DEMO" element after rendering
       setTimeout(() => {
         document
           .querySelectorAll(".scheduler_default_corner")
@@ -106,7 +103,7 @@ export const getSchedulerConfig = (
               child.id = "demo-label";
             }
           });
-      }, 0); // Add a small delay to ensure the DOM is fully rendered
+      }, 0);
     },
   };
 };

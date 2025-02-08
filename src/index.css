@@ -335,6 +335,10 @@ body {
 
 #demo-label{display: none !important;}
 
+.hover-effect:hover {
+  color: #1a202c; /* Dark color (adjust as needed) */
+  font-weight: bold;
+}
 
 @media (max-width: 600px) {
   .compact-table .ant-table {

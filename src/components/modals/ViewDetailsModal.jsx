@@ -31,10 +31,6 @@ const ViewDetailsModal = ({
     return null;
   }
 
-  const handleButtonClick = (action) => {
-    onOtherModal(action);
-  };
-
   const {
     checkInDate,
     checkOutDate,
@@ -49,6 +45,20 @@ const ViewDetailsModal = ({
   const amountPaid = billing?.[0]?.amountPaid || "N/A";
   const balanceDue = billing?.[0]?.balance || "N/A";
   const adult = bookedRooms?.[0].numberOfAdults || "N/A";
+
+  const handleButtonClick = (buttonName) => {
+    onOtherModal({
+      buttonName,
+      reservationData: {
+        checkInDate,
+        checkOutDate,
+        numberOfNights,
+        billing,
+        bookedRooms,
+        activity,
+      },
+    });
+  };
 
   return (
     <Modal

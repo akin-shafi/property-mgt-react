@@ -93,6 +93,7 @@ export const hotelBookings = async (hotelId, token) => {
     }
 
     const data = await response.json();
+    console.log("data 1:", data);
 
     const formattedReservations = data.map((reservation) => {
       const activityType = reservation.activity;
@@ -101,7 +102,6 @@ export const hotelBookings = async (hotelId, token) => {
         barBackColor: "#fff",
       }; // Default colors if no match
 
-      // console.log("Reservation 1:", reservation);
       const displyData = {
         id: parseInt(reservation.id),
         text: `${reservation.name} - ${reservation.rooms

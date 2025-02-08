@@ -2,28 +2,18 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  Drawer,
-  Button,
-  Form,
-  Input,
-  DatePicker,
-  Select,
-  Spin,
-  message,
-} from "antd";
-import { fetchReservationById } from "@/hooks/useReservation";
-import dayjs from "dayjs";
+import { Drawer, Button, Form, Input, Spin, message } from "antd";
 
 export default function ModalDrawer({
   open,
   onClose,
   pageTitle,
-  resourceId,
-  token,
+  dataSet, // Receiving the variable containing reservation details
 }) {
   const showPageTitle = pageTitle ?? "Check-out";
   const [form] = Form.useForm();
+
+  // State variables to hold reservation details
   const [reservationDetails, setReservationDetails] = useState(null);
   const [roomName, setRoomName] = useState("");
   const [roomPrice, setRoomPrice] = useState(0);
@@ -33,47 +23,27 @@ export default function ModalDrawer({
   const [grandTotal, setGrandTotal] = useState(0);
   const [loading, setLoading] = useState(false);
 
+  // Update state when dataSet is received
   useEffect(() => {
-    const fetchReservationDetails = async () => {
-      if (open && resourceId) {
-        setLoading(true);
-        try {
-          const data = await fetchReservationById(resourceId, token);
-          const reservationDetails = data.reservationDetails;
-          const billingDetails = data.reservationDetails.billing[0];
-          const roomDetails = data.reservationDetails.bookedRooms[0];
+    if (dataSet && dataSet.reservationData) {
+      const reservationData = dataSet.reservationData;
 
-          setAmountPaid(billingDetails.amountPaid || "N/A");
-          setBalance(billingDetails.balance || "N/A");
-          setRoomName(roomDetails.roomName);
-          setRoomPrice(Number.parseFloat(roomDetails.roomPrice));
-          setNumberOfNights(reservationDetails.numberOfNights);
-          setGrandTotal(Number.parseFloat(billingDetails.grandTotal));
+      setReservationDetails(reservationData);
+      setNumberOfNights(reservationData.numberOfNights);
 
-          const filteredData = {
-            checkInDate: dayjs(reservationDetails.checkInDate).format(
-              "MMM DD, YYYY"
-            ),
-            checkOutDate: dayjs(reservationDetails.checkOutDate).format(
-              "MMM DD, YYYY"
-            ),
-            reservationType: reservationDetails.reservationType,
-            reservationStatus: reservationDetails.reservationStatus,
-            additionalNotes: reservationDetails.additionalNotes || "",
-          };
-
-          setReservationDetails(filteredData);
-          form.setFieldsValue(filteredData);
-        } catch (err) {
-          console.log(err, "Failed to fetch reservation data");
-          message.error("Failed to fetch reservation data");
-        } finally {
-          setLoading(false);
-        }
+      // Check if bookedRooms and billing exist
+      if (reservationData.bookedRooms?.length > 0) {
+        setRoomName(reservationData.bookedRooms[0].roomName);
+        setRoomPrice(parseFloat(reservationData.bookedRooms[0].roomPrice));
       }
-    };
-    fetchReservationDetails();
-  }, [open, resourceId, token, form]);
+
+      if (reservationData.billing?.length > 0) {
+        setAmountPaid(parseFloat(reservationData.billing[0].amountPaid));
+        setBalance(reservationData.billing[0].balance);
+        setGrandTotal(parseFloat(reservationData.billing[0].grandTotal));
+      }
+    }
+  }, [dataSet]);
 
   const handleCheckout = async (values) => {
     if (parseFloat(values.amountPaid) !== parseFloat(balance)) {
@@ -82,8 +52,6 @@ export default function ModalDrawer({
     }
 
     console.log("Checkout values:", values);
-    // Implement the checkout logic here
-    // You can make an API call to update the reservation status
     message.success("Check-out successful");
     onClose();
   };
@@ -96,11 +64,10 @@ export default function ModalDrawer({
       title={showPageTitle}
       width="30%"
       className="rounded-md custom-drawer"
-      styles={{ body: { padding: 0 } }}
       maskClosable={false}
     >
       <div className="flex flex-col h-full">
-        <div className="flex-1 flex flex-col p-6 gap-6">
+        <div className="flex-1 flex flex-col p-2 gap-6">
           {loading ? (
             <Spin size="large" />
           ) : (
@@ -129,32 +96,13 @@ export default function ModalDrawer({
                       </td>
                     </tr>
                     {reservationDetails && (
-                      <>
-                        <tr className="border-b">
-                          <td className="py-2">Check-in Date:</td>
-                          <td className="text-right">
-                            {reservationDetails.checkInDate}
-                          </td>
-                        </tr>
-                        <tr className="border-b">
-                          <td className="py-2">Check-out Date:</td>
-                          <td className="text-right">
-                            {reservationDetails.checkOutDate}
-                          </td>
-                        </tr>
-                        <tr className="border-b">
-                          <td className="py-2">Reservation Type:</td>
-                          <td className="text-right">
-                            {reservationDetails.reservationType}
-                          </td>
-                        </tr>
-                        <tr className="border-b">
-                          <td className="py-2">Reservation Status:</td>
-                          <td className="text-right">
-                            {reservationDetails.reservationStatus}
-                          </td>
-                        </tr>
-                      </>
+                      <tr className="border-b">
+                        <td className="py-2">Check-in/out:</td>
+                        <td className="text-right">
+                          {reservationDetails.checkInDate} -{" "}
+                          {reservationDetails.checkOutDate}
+                        </td>
+                      </tr>
                     )}
                     <tr className="border-b">
                       <td className="py-2">Amount Paid:</td>
@@ -168,68 +116,25 @@ export default function ModalDrawer({
                 </table>
               </div>
 
-              <Form form={form} onFinish={handleCheckout}>
-                {balance !== "0.00" && (
-                  <div className="flex flex-wrap -mx-2">
-                    <div className="w-full px-2">
-                      <Form.Item
-                        name="amountPaid"
-                        label="Amount Paid"
-                        rules={[
-                          {
-                            required: true,
-                            message: "Please enter the amount paid",
-                          },
-                        ]}
-                      >
-                        <Input
-                          type="number"
-                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                        />
-                      </Form.Item>
-                    </div>
-                    <div className="w-full px-2">
-                      <Form.Item
-                        name="paymentMode"
-                        label="Payment Mode"
-                        rules={[
-                          {
-                            required: true,
-                            message: "Please select the payment mode",
-                          },
-                        ]}
-                      >
-                        <Select className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                          <Select.Option value="cash">Cash</Select.Option>
-                          <Select.Option value="card">Card</Select.Option>
-                          <Select.Option value="transfer">
-                            Transfer
-                          </Select.Option>
-                        </Select>
-                      </Form.Item>
-                    </div>
+              {balance !== "0.00" && (
+                <p>
+                  Guest has an outstanding balance. Please process before
+                  checkout.
+                </p>
+              )}
+
+              {balance === "0.00" && (
+                <Form form={form} onFinish={handleCheckout}>
+                  <Form.Item name="additionalNotes" label="Additional Notes">
+                    <Input.TextArea rows={4} />
+                  </Form.Item>
+                  <div className="flex justify-end mt-4">
+                    <Button type="primary" htmlType="submit">
+                      Complete Check-out
+                    </Button>
                   </div>
-                )}
-                <div className="flex flex-wrap -mx-2">
-                  <div className="w-full px-2">
-                    <Form.Item name="additionalNotes" label="Additional Notes">
-                      <Input.TextArea
-                        rows={4}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                      />
-                    </Form.Item>
-                  </div>
-                </div>
-                <div className="flex justify-end mt-4">
-                  <Button
-                    type="primary"
-                    htmlType="submit"
-                    className="w-full md:w-auto inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                  >
-                    Complete Check-out
-                  </Button>
-                </div>
-              </Form>
+                </Form>
+              )}
             </>
           )}
         </div>

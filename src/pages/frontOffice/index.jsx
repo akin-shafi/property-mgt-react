@@ -8,7 +8,7 @@ import { getSchedulerConfig } from "@/hooks/SchedulerConfig";
 import { hotelBookings, updateReservationStatus } from "@/hooks/useReservation";
 import { fetchHotelRoomsWithPrice } from "@/hooks/useAction";
 import { Spin, message } from "antd";
-// import ViewPaymentModal from "@/components/modals/ViewPaymentModal";
+import AddPaymentModal from "@/components/modals/AddPaymentModal";
 import ModalDrawer from "@/components/modals/ModalDrawer";
 
 import ViewDetailsModal from "@/components/modals/ViewDetailsModal";
@@ -26,11 +26,11 @@ const Scheduler = () => {
   const [hotelReservations, setHotelReservations] = useState([]);
   const [scheduler, setScheduler] = useState(null);
   const [events, setEvents] = useState([]);
+  const [dataSet, setDataSet] = useState([]);
   const [resources, setResources] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  // const [isViewPaymentModalVisible, setViewPaymentModalVisible] =
-  //   useState(false); // Modal state
+  const [isAddPaymentModalVisible, setAddPaymentModalVisible] = useState(false); // Modal state
   const [isEditReservationVisible, setEditReservationVisible] = useState(false); // Modal state
   const [isInvoiceModalVisible, setInvoiceModalVisible] = useState(false); // Modal state
 
@@ -94,6 +94,7 @@ const Scheduler = () => {
   // Initialize scheduler once it's available
   useEffect(() => {
     if (scheduler) {
+      console.log("hotelReservations", hotelReservations);
       setEvents(hotelReservations);
       setResources(hotelRooms);
 
@@ -109,7 +110,7 @@ const Scheduler = () => {
     events,
     resources,
     navigate,
-    // setViewPaymentModalVisible,
+    // setAddPaymentModalVisible,
     setViewDetailsModalVisible,
     // setEditReservationVisible,
     setSelectedResourceId // Pass the setSelectedResourceId function to update the resourceId
@@ -119,7 +120,9 @@ const Scheduler = () => {
     setDrawerOpen((prev) => !prev);
   };
 
-  const handleOpenEditReservationModal = async (buttonName) => {
+  const handleOpenEditReservationModal = async (obj) => {
+    console.log("object", obj);
+    setDataSet(obj);
     setViewDetailsModalVisible(false);
 
     const updateStatus = async (data) => {
@@ -147,10 +150,11 @@ const Scheduler = () => {
       Edit: () => setEditReservationVisible(true),
       Invoice: () => setInvoiceModalVisible(true),
       "Check-Out": () => toggleDrawer(),
+      "Add Payment": () => setAddPaymentModalVisible(true),
     };
 
-    if (actions[buttonName]) {
-      await actions[buttonName]();
+    if (actions[obj.buttonName]) {
+      await actions[obj.buttonName]();
     }
   };
 
@@ -168,12 +172,6 @@ const Scheduler = () => {
         </main>
       </Spin>
       {/* Modals */}
-      {/* <ViewPaymentModal
-        visible={isViewPaymentModalVisible}
-        onCancel={() => setViewPaymentModalVisible(false)}
-        resourceId={selectedResourceId} // Pass the selected resourceId to modal
-        token={token}
-      /> */}
 
       <ViewDetailsModal
         visible={isViewDetailsModalVisible}
@@ -182,6 +180,13 @@ const Scheduler = () => {
           handleOpenEditReservationModal(buttonName)
         }
         resourceId={selectedResourceId}
+        token={token}
+      />
+      <AddPaymentModal
+        visible={isAddPaymentModalVisible}
+        onCancel={() => setAddPaymentModalVisible(false)}
+        resourceId={selectedResourceId}
+        data={dataSet}
         token={token}
       />
       <EditReservationModal
@@ -201,6 +206,7 @@ const Scheduler = () => {
         open={drawerOpen}
         onClose={toggleDrawer}
         resourceId={selectedResourceId}
+        dataSet={dataSet}
         token={token}
       />
     </Layout>
