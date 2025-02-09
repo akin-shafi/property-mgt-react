@@ -3,6 +3,7 @@
 
 import { useEffect, useState } from "react";
 import { Drawer, Button, Form, Input, Spin, message } from "antd";
+import dayjs from "dayjs";
 
 export default function ModalDrawer({
   open,
@@ -22,6 +23,10 @@ export default function ModalDrawer({
   const [numberOfNights, setNumberOfNights] = useState(0);
   const [grandTotal, setGrandTotal] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [refundAmount, setRefundAmount] = useState(0); // State to hold refund amount
+  const [earlyCheckout, setEarlyCheckout] = useState(false); // State to indicate early checkout
+  const [nightSpent, setNightSpent] = useState(0); // State to hold the number of nights spent
+  const [daysRemain, setRemainingDays] = useState(0);
 
   // Update state when dataSet is received
   useEffect(() => {
@@ -42,16 +47,51 @@ export default function ModalDrawer({
         setBalance(parseFloat(reservationData.totalBalance));
         setGrandTotal(parseFloat(reservationData.grandTotal));
       }
+
+      // Calculate nights spent
+      const checkInDate = dayjs(reservationData.checkInDate);
+      const currentDate = dayjs();
+      const nightsSpent = currentDate.diff(checkInDate, "day");
+      setNightSpent(nightsSpent);
+
+      // Check for early checkout and calculate refund amount
+      const checkOutDate = dayjs(reservationData.checkOutDate);
+      if (checkInDate.isAfter(currentDate)) {
+        // Check-in date is in the future, indicating a reservation not yet booked in
+        setRefundAmount(grandTotal);
+      } else if (checkOutDate.isAfter(currentDate)) {
+        setEarlyCheckout(true);
+        const remainingDays = checkOutDate.diff(currentDate, "day");
+        setRemainingDays(remainingDays);
+        const refundAmount =
+          remainingDays * parseFloat(reservationData.bookedRooms[0].roomPrice);
+        setRefundAmount(refundAmount);
+      } else {
+        setEarlyCheckout(false);
+        setRefundAmount(0);
+      }
     }
   }, [dataSet]);
 
-  const handleCheckout = async (values) => {
-    if (parseFloat(values.amountPaid) !== parseFloat(balance)) {
-      message.error("The amount entered does not match the balance left");
-      return;
-    }
+  // Format money values
+  const formatMoney = (amount) =>
+    new Intl.NumberFormat("en-NG", {
+      style: "currency",
+      currency: "NGN",
+      minimumFractionDigits: 2,
+    }).format(amount);
 
-    console.log("Checkout values:", values);
+  const handleCheckout = async () => {
+    const values = await form.validateFields();
+    const payload = {
+      activity: "check_out",
+      reservationStatus: "transaction_completed",
+      refund: refundAmount,
+      nightSpent,
+      additionalNotes: values.additionalNotes || "", // Include additional notes
+    };
+
+    console.log("Checkout payload:", payload);
     message.success("Check-out successful");
     onClose();
   };
@@ -74,7 +114,7 @@ export default function ModalDrawer({
             <>
               <div className="reservation-info" style={{ marginTop: "-20px" }}>
                 <h2 className="text-xl font-bold mb-2">
-                  {reservationDetails?.guest?.fullName} (Room -{roomName})
+                  {reservationDetails?.guest?.fullName} (Room - {roomName})
                 </h2>
 
                 <table className="w-full">
@@ -88,42 +128,43 @@ export default function ModalDrawer({
                         </td>
                       </tr>
                     )}
-
-                    <tr className="border-b">
-                      <td className="py-2">Price per night:</td>
-                      <td className="text-right">NGN {roomPrice.toFixed(2)}</td>
-                    </tr>
                     <tr className="border-b">
                       <td className="py-2">Number of nights:</td>
                       <td className="text-right"> {numberOfNights}</td>
                     </tr>
                     <tr className="border-b">
+                      <td className="py-2">Price per night:</td>
+                      <td className="text-right">{formatMoney(roomPrice)}</td>
+                    </tr>
+
+                    <tr className="border-b">
                       <td className="py-2">Grand Total:</td>
-                      <td className="text-right">
-                        NGN {grandTotal.toFixed(2)}
-                      </td>
+                      <td className="text-right">{formatMoney(grandTotal)}</td>
                     </tr>
 
                     <tr className="border-b">
                       <td className="py-2">Amount Paid:</td>
-                      <td className="text-right">NGN {amountPaid}</td>
+                      <td className="text-right">{formatMoney(amountPaid)}</td>
                     </tr>
-                    {/* {balance !== 0 && ( */}
-                    <tr className="border-b">
-                      <td className="py-2">Balance:</td>
-                      <td className="text-right">NGN {balance}</td>
-                    </tr>
-                    {/* )} */}
+                    {balance !== 0 && (
+                      <tr className="border-b">
+                        <td className="py-2">Balance:</td>
+                        <td className="text-right">{formatMoney(balance)}</td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               </div>
 
-              {/* {balance !== 0 && (
-                <p>
-                  Guest has an outstanding balance. Please process before
-                  checkout.
-                </p>
-              )} */}
+              {earlyCheckout && (
+                <div className="mt-4 p-4 bg-yellow-100 border border-yellow-300 rounded">
+                  <p className="text-yellow-800">
+                    This is an early checkout. Because the number of days left
+                    is {daysRemain}, guest is eligible for a refund of{" "}
+                    {formatMoney(refundAmount)}.
+                  </p>
+                </div>
+              )}
 
               {balance === 0 && (
                 <Form form={form} onFinish={handleCheckout}>

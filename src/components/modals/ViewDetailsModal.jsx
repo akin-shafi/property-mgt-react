@@ -202,6 +202,7 @@ const ViewDetailsModal = ({
                     }`}
                   >
                     {buttonName}
+                    {/* {activity} */}
                   </button>
                 ))}
             </div>
