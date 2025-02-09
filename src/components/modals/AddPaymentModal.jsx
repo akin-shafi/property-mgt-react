@@ -1,25 +1,40 @@
-// import { useEffect, useState } from "react";
 import { Modal, Button, Form, Input, Select, message } from "antd";
+import { addPayment } from "@/hooks/useReservation";
 
 const AddPaymentModal = ({ visible, onCancel, resourceId, data, token }) => {
   const [form] = Form.useForm();
-  const balance = data?.reservationData?.billing[0]?.balance;
-  const amountPaid = data?.reservationData?.billing[0]?.amountPaid;
-  const grandTotal = data?.reservationData?.billing[0]?.grandTotal;
+  const balance = data?.reservationData?.totalBalance || "0";
+  const amountPaid = data?.reservationData?.totalPaid || "0";
+  const grandTotal = data?.reservationData?.grandTotal || "0";
+  const roomName = data?.reservationData?.bookedRooms?.[0]?.roomName || "N/A";
+  const guestDetails = data?.reservationData?.guest;
 
-  // console.log("balance", balance);
+  // Function to remove currency formatting
+  // const normalizeCurrency = (value) =>
+  //   parseFloat(value.replace(/[^0-9.-]+/g, ""));
+
+  // const normalizedBalance = normalizeCurrency(balance);
+
   const handleAddPayment = async (values) => {
-    if (parseFloat(values.amountPaid) !== parseFloat(balance)) {
-      message.error("The amount entered does not match the balance left");
-      return;
-    }
+    // if (parseFloat(values.amountPaid) !== normalizedBalance) {
+    //   message.error("The amount entered does not match the balance left");
+    //   return;
+    // }
 
-    console.log("Payment values:", values);
-    // Implement the payment logic here
-    // You can make an API call to add the payment
-    message.success("Payment added successfully");
-    form.resetFields();
-    onCancel();
+    try {
+      const response = await addPayment(
+        resourceId,
+        values.amountPaid,
+        values.payment_method,
+        token
+      );
+      message.success(response.message);
+      form.resetFields();
+      onCancel();
+    } catch (error) {
+      console.log(error);
+      message.error("Failed to add payment. Please try again.");
+    }
   };
 
   return (
@@ -30,19 +45,24 @@ const AddPaymentModal = ({ visible, onCancel, resourceId, data, token }) => {
       footer={null}
       width={600}
     >
+      <div className="">
+        <strong>Reservation: {guestDetails?.fullName || "N/A"} | </strong>
+        <span>RoomName: {roomName}</span>
+      </div>
+
       <table style={{ width: "50%" }} className="mb-4">
         <tbody>
           <tr className="border-b">
             <th className="text-left py-2">Amount Paid:</th>
-            <th className="text-right py-2">{amountPaid}</th>
+            <td className="text-right py-2">{amountPaid}</td>
           </tr>
           <tr className="border-b">
             <th className="text-left py-2">Grand Total:</th>
-            <th className="text-right py-2">{grandTotal}</th>
+            <td className="text-right py-2">{grandTotal}</td>
           </tr>
           <tr className="border-b">
             <th className="text-left py-2">Balance left:</th>
-            <th className="text-right py-2">{balance}</th>
+            <td className="text-right py-2">{balance}</td>
           </tr>
         </tbody>
       </table>
@@ -55,7 +75,7 @@ const AddPaymentModal = ({ visible, onCancel, resourceId, data, token }) => {
           <Input type="number" />
         </Form.Item>
         <Form.Item
-          name="paymentMode"
+          name="payment_method"
           label="Payment Mode"
           rules={[
             { required: true, message: "Please select the payment mode" },
@@ -64,7 +84,7 @@ const AddPaymentModal = ({ visible, onCancel, resourceId, data, token }) => {
           <Select>
             <Select.Option value="cash">Cash</Select.Option>
             <Select.Option value="bank_transfer">Transfer</Select.Option>
-            <Select.Option value="pos">POS Terminal</Select.Option>
+            <Select.Option value="pos_terminal">POS Terminal</Select.Option>
             <Select.Option value="others">Others</Select.Option>
           </Select>
         </Form.Item>

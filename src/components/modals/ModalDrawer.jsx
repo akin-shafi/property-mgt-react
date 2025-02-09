@@ -18,7 +18,7 @@ export default function ModalDrawer({
   const [roomName, setRoomName] = useState("");
   const [roomPrice, setRoomPrice] = useState(0);
   const [amountPaid, setAmountPaid] = useState(0);
-  const [balance, setBalance] = useState("0.00");
+  const [balance, setBalance] = useState(0);
   const [numberOfNights, setNumberOfNights] = useState(0);
   const [grandTotal, setGrandTotal] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -38,9 +38,9 @@ export default function ModalDrawer({
       }
 
       if (reservationData.billing?.length > 0) {
-        setAmountPaid(parseFloat(reservationData.billing[0].amountPaid));
-        setBalance(reservationData.billing[0].balance);
-        setGrandTotal(parseFloat(reservationData.billing[0].grandTotal));
+        setAmountPaid(parseFloat(reservationData.totalPaid));
+        setBalance(parseFloat(reservationData.totalBalance));
+        setGrandTotal(parseFloat(reservationData.grandTotal));
       }
     }
   }, [dataSet]);
@@ -62,25 +62,33 @@ export default function ModalDrawer({
       onClose={onClose}
       open={open}
       title={showPageTitle}
-      width="30%"
+      width="35%"
       className="rounded-md custom-drawer"
       maskClosable={false}
     >
       <div className="flex flex-col h-full">
-        <div className="flex-1 flex flex-col p-2 gap-6">
+        <div className="flex-1 flex flex-col gap-2">
           {loading ? (
             <Spin size="large" />
           ) : (
             <>
-              <div className="reservation-info">
-                <h2 className="text-xl font-bold mb-4">Reservation Details</h2>
+              <div className="reservation-info" style={{ marginTop: "-20px" }}>
+                <h2 className="text-xl font-bold mb-2">
+                  {reservationDetails?.guest?.fullName} (Room -{roomName})
+                </h2>
 
                 <table className="w-full">
                   <tbody>
-                    <tr className="border-b">
-                      <td className="py-2">Room:</td>
-                      <td className="text-right">{roomName}</td>
-                    </tr>
+                    {reservationDetails && (
+                      <tr className="border-b">
+                        <td className="py-2">Check-in/out:</td>
+                        <td className="text-right">
+                          {reservationDetails?.checkInDate} -{" "}
+                          {reservationDetails?.checkOutDate}
+                        </td>
+                      </tr>
+                    )}
+
                     <tr className="border-b">
                       <td className="py-2">Price per night:</td>
                       <td className="text-right">NGN {roomPrice.toFixed(2)}</td>
@@ -95,35 +103,29 @@ export default function ModalDrawer({
                         NGN {grandTotal.toFixed(2)}
                       </td>
                     </tr>
-                    {reservationDetails && (
-                      <tr className="border-b">
-                        <td className="py-2">Check-in/out:</td>
-                        <td className="text-right">
-                          {reservationDetails.checkInDate} -{" "}
-                          {reservationDetails.checkOutDate}
-                        </td>
-                      </tr>
-                    )}
+
                     <tr className="border-b">
                       <td className="py-2">Amount Paid:</td>
                       <td className="text-right">NGN {amountPaid}</td>
                     </tr>
+                    {/* {balance !== 0 && ( */}
                     <tr className="border-b">
                       <td className="py-2">Balance:</td>
                       <td className="text-right">NGN {balance}</td>
                     </tr>
+                    {/* )} */}
                   </tbody>
                 </table>
               </div>
 
-              {balance !== "0.00" && (
+              {/* {balance !== 0 && (
                 <p>
                   Guest has an outstanding balance. Please process before
                   checkout.
                 </p>
-              )}
+              )} */}
 
-              {balance === "0.00" && (
+              {balance === 0 && (
                 <Form form={form} onFinish={handleCheckout}>
                   <Form.Item name="additionalNotes" label="Additional Notes">
                     <Input.TextArea rows={4} />

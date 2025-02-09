@@ -12,8 +12,10 @@ export const getSchedulerConfig = (
   events,
   resources,
   navigate,
-  setViewPaymentModalVisible,
-  setSelectedResourceId // New function to pass the resourceId to modal
+  setExtendStayModalVisible,
+  setViewDetailsModalVisible,
+  setSelectedResourceId,
+  handleNewEndDate
 ) => {
   const [loadingItems, setLoadingItems] = useState({}); // Track loading state for each item
 
@@ -49,10 +51,17 @@ export const getSchedulerConfig = (
   const handleDivClick = (resourceId) => {
     setLoadingItems((prev) => ({ ...prev, [resourceId]: true })); // Set loading for specific item
     setSelectedResourceId(resourceId);
-    setViewPaymentModalVisible(true);
+    setViewDetailsModalVisible(true);
     setTimeout(() => {
       setLoadingItems((prev) => ({ ...prev, [resourceId]: false })); // Reset loading after timeout
     }, 1000);
+  };
+
+  const handleExtendEvent = (resourceId, newEnd) => {
+    console.log("resourceId", newEnd);
+    setSelectedResourceId(resourceId);
+    setExtendStayModalVisible(true);
+    handleNewEndDate(resourceId, newEnd);
   };
 
   return {
@@ -73,6 +82,12 @@ export const getSchedulerConfig = (
       if (args.resource !== args.resourceRoot) {
         handleCreateNew(args);
       }
+    },
+
+    onEventResized: (args) => {
+      const resourceId = args.e.data.id;
+      const newEnd = args.newEnd.value;
+      handleExtendEvent(resourceId, newEnd);
     },
 
     onBeforeEventDomAdd: (args) => {

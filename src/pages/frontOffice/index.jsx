@@ -14,6 +14,8 @@ import ModalDrawer from "@/components/modals/ModalDrawer";
 import ViewDetailsModal from "@/components/modals/ViewDetailsModal";
 import EditReservationModal from "@/components/modals/EditReservationModal";
 import InvoiceModal from "@/components/modals/InvoiceModal";
+import ExchangeRoomModal from "@/components/modals/ExchangeRoomModal";
+import ExtendStayModalVisible from "@/components/modals/ExtendStayModalVisible";
 
 const Scheduler = () => {
   const navigate = useNavigate();
@@ -33,7 +35,9 @@ const Scheduler = () => {
   const [isAddPaymentModalVisible, setAddPaymentModalVisible] = useState(false); // Modal state
   const [isEditReservationVisible, setEditReservationVisible] = useState(false); // Modal state
   const [isInvoiceModalVisible, setInvoiceModalVisible] = useState(false); // Modal state
-
+  const [isExchangeRoomVisible, setExchangeRoomVisible] = useState(false); // Modal state
+  const [extendStayModalVisible, setExtendStayModalVisible] = useState(false); // Modal state
+  const [newEndDate, setNewEndDate] = useState(null); // State to hold new end date
   const [isViewDetailsModalVisible, setViewDetailsModalVisible] =
     useState(false); // Example modal state
   const [selectedResourceId, setSelectedResourceId] = useState(null); // Store resourceId
@@ -77,7 +81,7 @@ const Scheduler = () => {
 
       try {
         const reservationData = await hotelBookings(hotelId, token);
-        console.log("reservationData today", reservationData);
+        // console.log("reservationData today", reservationData);
         setHotelReservations(reservationData);
       } catch (err) {
         setError(err.message || "Failed to fetch reservation data.");
@@ -94,7 +98,7 @@ const Scheduler = () => {
   // Initialize scheduler once it's available
   useEffect(() => {
     if (scheduler) {
-      console.log("hotelReservations", hotelReservations);
+      // console.log("hotelReservations", hotelReservations);
       setEvents(hotelReservations);
       setResources(hotelRooms);
 
@@ -104,16 +108,22 @@ const Scheduler = () => {
     }
   }, [scheduler, hotelReservations, hotelRooms]);
 
+  const handleNewEndDate = (resourceId, newEnd) => {
+    setSelectedResourceId(resourceId);
+    setNewEndDate(newEnd); // Update new end date
+    setExtendStayModalVisible(true);
+  };
+
   const config = getSchedulerConfig(
     scheduler,
     setScheduler,
     events,
     resources,
     navigate,
-    // setAddPaymentModalVisible,
+    setExtendStayModalVisible,
     setViewDetailsModalVisible,
-    // setEditReservationVisible,
-    setSelectedResourceId // Pass the setSelectedResourceId function to update the resourceId
+    setSelectedResourceId, // Pass the setSelectedResourceId function to update the resourceId
+    handleNewEndDate // Pass the function here
   );
 
   const toggleDrawer = () => {
@@ -151,6 +161,7 @@ const Scheduler = () => {
       Invoice: () => setInvoiceModalVisible(true),
       "Check-Out": () => toggleDrawer(),
       "Add Payment": () => setAddPaymentModalVisible(true),
+      "Exchange Room": () => setExchangeRoomVisible(true),
     };
 
     if (actions[obj.buttonName]) {
@@ -182,6 +193,15 @@ const Scheduler = () => {
         resourceId={selectedResourceId}
         token={token}
       />
+
+      <ExtendStayModalVisible
+        visible={extendStayModalVisible}
+        onCancel={() => setExtendStayModalVisible(false)}
+        newEndDate={newEndDate}
+        resourceId={selectedResourceId} // Pass the selected resourceId to modal
+        token={token}
+      />
+
       <AddPaymentModal
         visible={isAddPaymentModalVisible}
         onCancel={() => setAddPaymentModalVisible(false)}
@@ -200,6 +220,12 @@ const Scheduler = () => {
         resourceId={selectedResourceId} // Pass the selected resourceId to modal
         token={token}
         hotelName={hotelName}
+      />
+      <ExchangeRoomModal
+        visible={isExchangeRoomVisible}
+        onCancel={() => setExchangeRoomVisible(false)}
+        resourceId={selectedResourceId} // Pass the selected resourceId to modal
+        token={token}
       />
 
       <ModalDrawer

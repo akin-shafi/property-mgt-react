@@ -188,12 +188,14 @@ const ReservationForm = () => {
         >
           <Button htmlType="button">Cancel</Button>
           <Button
-            type="primary"
-            className="bg-appBlue hover:bg-appBlueLight hover:text-white"
+            // type="primary"
+            // className="bg-appBlue hover:bg-appBlueLight hover:text-white"
+            disabled={loading} // Disable button when loading
+            className={` p-2 rounded bg-teal-700 text-white hover:bg-teal-900 transition ${
+              loading ? "opacity-50 cursor-not-allowed" : ""
+            }`}
             size="lg"
             onClick={handleSubmit}
-            disabled={loading} // Disable button when loading
-            loading={loading} // Show loading spinner
           >
             {loading ? "Processing..." : "Reserve"} {/* Change button text */}
           </Button>

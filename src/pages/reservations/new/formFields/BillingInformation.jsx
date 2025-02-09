@@ -292,7 +292,7 @@ const BillingInformation = ({ onChange, reservationData, token }) => {
         >
           <Option value="cash">Cash</Option>
           <Option value="bank_transfer">Bank Transfer</Option>
-          <Option value="pos">POS Terminal</Option>
+          <Option value="pos_terminal">POS Terminal</Option>
           <Option value="others">Others</Option>
         </Select>
       </div>

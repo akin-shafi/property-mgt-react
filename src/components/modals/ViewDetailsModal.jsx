@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { fetchReservationById } from "@/hooks/useReservation";
 import { Modal, Spin } from "antd";
+import dayjs from "dayjs";
 
 const ViewDetailsModal = ({
   visible,
@@ -32,27 +33,49 @@ const ViewDetailsModal = ({
   }
 
   const {
+    guest,
     checkInDate,
     checkOutDate,
     numberOfNights,
+    totalBalance,
+    totalPaid,
+    grandTotal,
     billing,
     bookedRooms,
     activity,
   } = reservationData;
 
-  const paymentMethod = billing?.[0]?.payment_method || "N/A";
-  const grandTotal = billing?.[0]?.grandTotal || "N/A";
-  const amountPaid = billing?.[0]?.amountPaid || "N/A";
-  const balanceDue = billing?.[0]?.balance || "N/A";
+  const normalizeCurrency = (value) =>
+    parseFloat(value.replace(/[^0-9.-]+/g, ""));
+
+  const normalizedBalance = normalizeCurrency(totalBalance || "0");
+  const normalizedTotalPaid = normalizeCurrency(totalPaid || "0");
+  const normalizedGrandTotal = normalizeCurrency(grandTotal || "0");
+
+  // Format amounts to currency
+  const formatter = new Intl.NumberFormat("en-NG", {
+    style: "currency",
+    currency: "NGN",
+  });
+
+  const formattedGrandTotal = formatter.format(normalizedGrandTotal);
+  const formattedTotalPaid = formatter.format(normalizedTotalPaid);
+  const formattedTotalBalance = formatter.format(normalizedBalance);
+
+  // console.log("balanceDue", normalizedBalance);
   const adult = bookedRooms?.[0].numberOfAdults || "N/A";
 
   const handleButtonClick = (buttonName) => {
     onOtherModal({
       buttonName,
       reservationData: {
+        guest,
         checkInDate,
         checkOutDate,
         numberOfNights,
+        totalBalance: normalizedBalance,
+        totalPaid: normalizedTotalPaid,
+        grandTotal: normalizedGrandTotal,
         billing,
         bookedRooms,
         activity,
@@ -69,16 +92,21 @@ const ViewDetailsModal = ({
       width={600}
     >
       <Spin spinning={loading}>
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-4xl mx-auto text-sm">
           <div className="grid grid-cols-[1fr,auto] gap-6">
             <div className="p-6">
               <div className="space-y-4">
                 <table className="min-w-full divide-y divide-gray-200">
                   <tbody>
                     <tr>
-                      <td className="text-muted-foreground">Check-in/out</td>
+                      <td className="text-muted-foreground">Guest:</td>
+                      <td className="font-medium">{guest.fullName}</td>
+                    </tr>
+                    <tr>
+                      <td className="text-muted-foreground">Check-in/out:</td>
                       <td className="font-medium">
-                        : {checkInDate} - {checkOutDate}
+                        {dayjs(checkInDate).format("MMM DD, YYYY")} -{" "}
+                        {dayjs(checkOutDate).format("MMM DD, YYYY")}
                       </td>
                     </tr>
                     <tr>
@@ -91,28 +119,55 @@ const ViewDetailsModal = ({
                       <td className="text-muted-foreground">No. of Adults</td>
                       <td className="font-medium">: {adult}</td>
                     </tr>
-                    <tr>
-                      <td className="text-muted-foreground">Payment Mode</td>
-                      <td className="font-medium">: {paymentMethod}</td>
-                    </tr>
                   </tbody>
                 </table>
 
                 <hr className="my-4" />
-                <div className="grid grid-cols-1 gap-2">
+                <table className="w-full border-collapse">
+                  <thead>
+                    <tr className="bg-gray-100 border-b">
+                      <th className="py-2 px-2 text-left">S/N</th>
+                      <th className="py-2 px-2 text-left">Payment Mode</th>
+                      <th className="py-2 px-2 text-left">Amount Paid</th>
+                      <th className="py-2 px-2 text-left">Balance</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {billing?.map((bill, index) => (
+                      <tr key={index} className="hover:bg-gray-50">
+                        <td className="py-2 px-2 border-b">{index + 1}</td>
+                        <td className="py-2 px-2 border-b">
+                          {bill.payment_method}
+                        </td>
+                        <td className="py-2 px-2 border-b">
+                          {bill.amountPaid}
+                        </td>
+                        <td className="py-2 px-2 border-b">{bill.balance}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+
+                <div className="grid grid-cols-1 gap-2 ">
                   <div className="flex justify-between">
                     <span className="font-semibold">Grand Total</span>
-                    <span className="font-semibold">: {grandTotal}</span>
+                    <span className="font-semibold">
+                      : {formattedGrandTotal}
+                    </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="font-semibold">Amount Paid</span>
-                    <span className="font-semibold">: {amountPaid}</span>
+                    <span className="font-semibold">Total Paid</span>
+                    <span className="font-semibold">
+                      : {formattedTotalPaid}
+                    </span>
                   </div>
 
-                  {balanceDue !== "0.00" && (
+                  {normalizedBalance !== 0 && (
                     <div className="flex justify-between">
-                      <span className="font-semibold">Balance</span>
-                      <span className="font-semibold">: {balanceDue}</span>
+                      <span className="font-semibold">Total Balance</span>
+                      <span className="font-semibold">
+                        : {formattedTotalBalance}
+                      </span>
                     </div>
                   )}
                 </div>
@@ -127,7 +182,7 @@ const ViewDetailsModal = ({
                 "Edit",
                 "Invoice",
                 "Add Service",
-                balanceDue !== "0.00" && "Add Payment",
+                normalizedBalance !== 0 && "Add Payment",
                 "Exchange Room",
               ]
                 .filter(Boolean) // Filter out falsey values to remove the buttons conditionally

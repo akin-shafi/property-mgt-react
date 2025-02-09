@@ -93,7 +93,7 @@ export const hotelBookings = async (hotelId, token) => {
     }
 
     const data = await response.json();
-    console.log("data 1:", data);
+    // console.log("data 1:", data);
 
     const formattedReservations = data.map((reservation) => {
       const activityType = reservation.activity;
@@ -173,6 +173,41 @@ export const createReservation = async (data, token) => {
   }
 };
 
+export const addPayment = async (
+  reservationId,
+  amountPaid,
+  paymentMethod,
+  token
+) => {
+  const data = {
+    reservationId,
+    amountPaid,
+    paymentMethod,
+  };
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/api/reservations/add-payment`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+      }
+    );
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || "Failed to create reservation");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error adding payment:", error);
+    throw error;
+  }
+};
+
 export const updateReservationStatus = async (data, id, token) => {
   try {
     const response = await fetch(`${API_BASE_URL}/api/reservations/${id}`, {
@@ -218,5 +253,31 @@ export const fetchReservationById = async (reservationId, token) => {
     return data;
   } catch (error) {
     throw new Error(error.message || "Error fetching reservation data.");
+  }
+};
+
+export const exchangeRoom = async (data, token) => {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/api/reservations/exchange-room`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || "Failed to exchange room");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error exchanging room:", error);
+    throw error;
   }
 };

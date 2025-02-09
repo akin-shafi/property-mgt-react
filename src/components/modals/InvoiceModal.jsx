@@ -38,7 +38,6 @@ const InvoiceModal = ({ visible, onCancel, resourceId, token, hotelName }) => {
             const guestDetails = details.guest;
             const billingDetails = details.billing?.[0] || {};
             const room = details.bookedRooms?.[0] || {};
-            // console.log("reservationDetails", details.createdAt);
             setAmountPaid(billingDetails.amountPaid || "N/A");
             setBalance(billingDetails.balance || "N/A");
             setBilling(billingDetails || "N/A");
@@ -48,15 +47,7 @@ const InvoiceModal = ({ visible, onCancel, resourceId, token, hotelName }) => {
             setNumberOfNights(details.numberOfNights || 0);
             setGrandTotal(parseFloat(billingDetails.grandTotal) || 0);
 
-            setReservationDetails({
-              createdAt: dayjs(details.createdAt).format(
-                "MMM DD, YYYY HH:mm:ss"
-              ),
-              checkInDate: dayjs(details.checkInDate).format("MMM DD, YYYY"),
-              checkOutDate: dayjs(details.checkOutDate).format("MMM DD, YYYY"),
-              reservationType: details.reservationType,
-              reservationStatus: details.reservationStatus,
-            });
+            setReservationDetails(details);
           }
         } catch (err) {
           console.error("Error fetching reservation data:", err);
@@ -69,6 +60,44 @@ const InvoiceModal = ({ visible, onCancel, resourceId, token, hotelName }) => {
     fetchReservationDetails();
   }, [visible, resourceId, token]);
 
+  const filteredData = reservationDetails
+    ? {
+        createdAt: dayjs(reservationDetails.createdAt).format(
+          "MMM DD, YYYY HH:mm:ss"
+        ),
+        checkInDate: dayjs(reservationDetails.checkInDate).format(
+          "MMM DD, YYYY"
+        ),
+        checkOutDate: dayjs(reservationDetails.checkOutDate).format(
+          "MMM DD, YYYY"
+        ),
+        reservationType: reservationDetails.reservationType,
+        reservationStatus: reservationDetails.reservationStatus,
+      }
+    : {};
+
+  const normalizeCurrency = (value) =>
+    parseFloat(value.replace(/[^0-9.-]+/g, ""));
+
+  const normalizedBalance = normalizeCurrency(
+    reservationDetails?.totalBalance || "0"
+  );
+  const normalizedTotalPaid = normalizeCurrency(
+    reservationDetails?.totalPaid || "0"
+  );
+  const normalizedGrandTotal = normalizeCurrency(
+    reservationDetails?.grandTotal || "0"
+  );
+
+  // Format amounts to currency
+  const formatter = new Intl.NumberFormat("en-NG", {
+    style: "currency",
+    currency: "NGN",
+  });
+
+  const formattedGrandTotal = formatter.format(normalizedGrandTotal);
+  const formattedTotalPaid = formatter.format(normalizedTotalPaid);
+  const formattedTotalBalance = formatter.format(normalizedBalance);
   const downloadPDF = () => {
     const doc = new jsPDF();
     doc.setFont("helvetica", "bold");
@@ -185,11 +214,11 @@ const InvoiceModal = ({ visible, onCancel, resourceId, token, hotelName }) => {
           {hotelName}
         </h1>
 
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex justify-between items-center mb-1">
           <div className="text-left">
             <h3>{guest.fullName}</h3>
             <p>
-              <b>Date:</b> {reservationDetails?.createdAt}
+              <b>Date:</b> {filteredData?.createdAt}
             </p>
           </div>
 
@@ -200,15 +229,15 @@ const InvoiceModal = ({ visible, onCancel, resourceId, token, hotelName }) => {
         </div>
 
         <div className="mb-8">
-          <h2 className="text-xl font-semibold mb-4">Reservation Details</h2>
+          {/* <h2 className="text-xl font-semibold mb-4">Reservation Details</h2> */}
           <div className="grid grid-cols-2 gap-4">
             <div className="flex items-center">
               <User className="mr-2 text-gray-600" />
-              <span>{reservationDetails?.reservationType || "N/A"}</span>
+              <span>{filteredData?.reservationType || "N/A"}</span>
             </div>
             <div className="flex items-center">
               <CalendarDays className="mr-2 text-gray-600" />
-              <span>Check-in: {reservationDetails?.checkInDate || "N/A"}</span>
+              <span>Check-in: {filteredData?.checkInDate || "N/A"}</span>
             </div>
             <div className="flex items-center">
               <MapPin className="mr-2 text-gray-600" />
@@ -216,16 +245,14 @@ const InvoiceModal = ({ visible, onCancel, resourceId, token, hotelName }) => {
             </div>
             <div className="flex items-center">
               <CalendarDays className="mr-2 text-gray-600" />
-              <span>
-                Check-out: {reservationDetails?.checkOutDate || "N/A"}
-              </span>
+              <span>Check-out: {filteredData?.checkOutDate || "N/A"}</span>
             </div>
           </div>
         </div>
 
         <div className="mb-8">
-          <h2 className="text-xl font-semibold mb-4">Charges</h2>
-          <table className="w-full">
+          <h2 className="font-medium">Charges</h2>
+          <table className="" style={{ width: "50%" }}>
             <thead>
               <tr className="border-b">
                 <th className="text-left py-2">Description</th>
@@ -243,26 +270,62 @@ const InvoiceModal = ({ visible, onCancel, resourceId, token, hotelName }) => {
                   <td className="text-right">NGN {billing.taxValue}</td>
                 </tr>
               )}
-
-              {balance !== "0.00" && (
-                <>
-                  <tr className="border-b">
-                    <td className="py-2">Amount Paid</td>
-                    <td className="text-right">NGN {amountPaid}</td>
-                  </tr>
-                  <tr className="border-b">
-                    <td className="py-2">Balance </td>
-                    <td className="text-right">NGN {balance}</td>
-                  </tr>
-                </>
-              )}
+              <tr className="border-b">
+                <td className="py-2">Grand Total</td>
+                <td className="text-right">{formattedGrandTotal} </td>
+              </tr>
             </tbody>
           </table>
+          <p className="text-xl font-semibold mb-4 text-center mt-4">
+            Payment Record
+          </p>
+          {reservationDetails && (
+            <table className="w-full border-collapse">
+              <thead>
+                <tr className="bg-gray-100 border-b">
+                  <th className="py-2 px-2 text-left">S/N</th>
+                  <th className="py-2 px-2 text-left">Payment Mode</th>
+                  <th className="py-2 px-2 text-left">Amount Paid</th>
+                  <th className="py-2 px-2 text-left">Balance</th>
+                </tr>
+              </thead>
+              <tbody>
+                {reservationDetails?.billing?.map((bill, index) => (
+                  <tr key={index} className="hover:bg-gray-50">
+                    <td className="py-2 px-2 border-b">{index + 1}</td>
+                    <td className="py-2 px-2 border-b">
+                      {bill.payment_method}
+                    </td>
+                    <td className="py-2 px-2 border-b">{bill.amountPaid}</td>
+                    <td className="py-2 px-2 border-b">{bill.balance}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
 
-        <div className="flex justify-between items-center font-bold text-xl">
+        {/* <div className="flex justify-between items-center font-bold text-xl">
           <span>Grand Total</span>
           <span>NGN {grandTotal.toFixed(2)}</span>
+        </div> */}
+
+        <div className="grid grid-cols-1 gap-2 ">
+          {/* <div className="flex justify-between">
+            <span className="font-semibold">Grand Total</span>
+            <span className="font-semibold">: {formattedGrandTotal}</span>
+          </div> */}
+          <div className="flex justify-between">
+            <span className="font-semibold">Total Paid</span>
+            <span className="font-semibold">: {formattedTotalPaid}</span>
+          </div>
+
+          {normalizedBalance !== 0 && (
+            <div className="flex justify-between">
+              <span className="font-semibold">Total Balance</span>
+              <span className="font-semibold">: {formattedTotalBalance}</span>
+            </div>
+          )}
         </div>
 
         <div className="mt-8 text-center text-gray-600 text-sm">
