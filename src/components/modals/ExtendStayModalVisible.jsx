@@ -28,9 +28,9 @@ const ExtendStayModalVisible = ({
       if (visible && resourceId) {
         setLoading(true);
         try {
-          const reservationData = await fetchReservationById(resourceId, token);
-          if (reservationData?.reservationDetails) {
-            const details = reservationData.reservationDetails;
+          const data = await fetchReservationById(resourceId, token);
+          if (data?.reservation) {
+            const details = data.reservation;
             setReservationDetails(details);
             setCurrentRoom(details.bookedRooms?.[0] || null);
             setCheckInDate(dayjs(details.checkInDate));

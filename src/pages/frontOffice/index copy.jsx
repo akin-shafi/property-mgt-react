@@ -9,12 +9,12 @@ import { hotelBookings, updateReservationStatus } from "@/hooks/useReservation";
 import { fetchHotelRoomsWithPrice } from "@/hooks/useAction";
 import { Spin, message } from "antd";
 // import ViewPaymentModal from "@/components/modals/ViewPaymentModal";
-import ModalDrawer from "@/components/modals/ModalDrawer";
+import ModalDrawer from "@/components/modals/CheckOutDrawer";
 
 import ViewDetailsModal from "@/components/modals/ViewDetailsModal";
 import EditReservationModal from "@/components/modals/EditReservationModal";
 import InvoiceModal from "@/components/modals/InvoiceModal";
-import CheckOutModal from "@/components/modals/CheckOutModal";
+import CheckOutModal from "@/components/modals/ModalSample";
 
 const Scheduler = () => {
   const navigate = useNavigate();

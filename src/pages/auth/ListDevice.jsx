@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "antd";
 
-import ModalDrawer from "@/components/modals/ModalDrawer";
+import ModalDrawer from "@/components/modals/CheckOutDrawer";
 
 const DeviceLister = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);

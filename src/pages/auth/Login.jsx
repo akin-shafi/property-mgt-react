@@ -16,8 +16,8 @@ import { Label } from "@/components/ui/Label";
 
 export default function LoginPage() {
   const [message, setMessage] = useState(""); // State for messages
-  const [username, setUsername] = useState("standford001"); // State for username
-  const [tenantId, setTenantId] = useState("adm-8B36D103"); // State for tenantId
+  const [username, setUsername] = useState("empire001"); // State for username
+  const [tenantId, setTenantId] = useState("HT-8B36D103"); // State for tenantId
   const [password, setPassword] = useState("Test@123");
   const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
   const [loading, setLoading] = useState(false);

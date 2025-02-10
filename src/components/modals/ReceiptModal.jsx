@@ -12,7 +12,7 @@ const ReceiptModal = ({ visible, onClose, reservationId, token }) => {
       fetchReservationById(reservationId, token)
         .then((data) => {
           // console.log("Fetched reservation data: ", data); // Log the API response to confirm data
-          setReservationData(data.reservationDetails);
+          setReservationData(data.reservation);
         })
         .catch((error) => {
           console.error("Error fetching reservation:", error);

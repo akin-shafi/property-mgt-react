@@ -9,7 +9,7 @@ import { hotelBookings, updateReservationStatus } from "@/hooks/useReservation";
 import { fetchHotelRoomsWithPrice } from "@/hooks/useAction";
 import { Spin, message } from "antd";
 import AddPaymentModal from "@/components/modals/AddPaymentModal";
-import ModalDrawer from "@/components/modals/ModalDrawer";
+import CheckOutDrawer from "@/components/modals/CheckOutDrawer";
 
 import ViewDetailsModal from "@/components/modals/ViewDetailsModal";
 import EditReservationModal from "@/components/modals/EditReservationModal";
@@ -164,9 +164,30 @@ const Scheduler = () => {
       "Exchange Room": () => setExchangeRoomVisible(true),
     };
 
-    if (actions[obj.buttonName]) {
+    if (obj.buttonName === "Awaiting Arrival") {
+      message.info(
+        "You cannot check-in a guest earlier than the arrival date. Please adjust the check-in date if necessary.",
+        3
+      );
+    } else if (actions[obj.buttonName]) {
       await actions[obj.buttonName]();
     }
+  };
+
+  const handleCheckoutSuccess = async () => {
+    // Update the page in real-time
+    message.success("Check-out successful");
+    const updatedReservations = await hotelBookings(hotelId, token);
+    setHotelReservations(updatedReservations);
+    console.log("Checkout successful, update the page in real-time");
+    // Fetch the updated reservation data or update the state as needed
+    // For example:
+    // setReservationData(updatedData);
+  };
+
+  const handleOpenAddPaymentModal = (resourceId) => {
+    setSelectedResourceId(resourceId);
+    setAddPaymentModalVisible(true);
   };
 
   return (
@@ -228,12 +249,14 @@ const Scheduler = () => {
         token={token}
       />
 
-      <ModalDrawer
+      <CheckOutDrawer
         open={drawerOpen}
         onClose={toggleDrawer}
         resourceId={selectedResourceId}
         dataSet={dataSet}
         token={token}
+        onCheckoutSuccess={handleCheckoutSuccess}
+        onOpenAddPaymentModal={handleOpenAddPaymentModal} // Add this prop
       />
     </Layout>
   );

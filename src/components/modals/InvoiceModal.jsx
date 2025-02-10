@@ -33,8 +33,8 @@ const InvoiceModal = ({ visible, onCancel, resourceId, token, hotelName }) => {
         setLoading(true);
         try {
           const data = await fetchReservationById(resourceId, token);
-          if (data && data.reservationDetails) {
-            const details = data.reservationDetails;
+          if (data && data.reservation) {
+            const details = data.reservation;
             const guestDetails = details.guest;
             const billingDetails = details.billing?.[0] || {};
             const room = details.bookedRooms?.[0] || {};

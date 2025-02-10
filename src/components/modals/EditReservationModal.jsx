@@ -20,9 +20,9 @@ const EditReservationModal = ({ visible, onCancel, resourceId, token }) => {
         setLoading(true);
         try {
           const data = await fetchReservationById(resourceId, token);
-          const reservationDetails = data.reservationDetails;
-          const billing = data.reservationDetails.billing[0];
-          const roomDetails = data.reservationDetails.bookedRooms[0];
+          const reservationDetails = data.reservation;
+          const billing = data.reservation.billing[0];
+          const roomDetails = data.reservation.bookedRooms[0];
 
           setRoomName(roomDetails.roomName);
           setRoomPrice(parseFloat(roomDetails.roomPrice));
