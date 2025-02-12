@@ -1,22 +1,73 @@
-export function RoomCard({ number, guest, status, onClick }) {
+import { useState } from "react";
+import { Modal } from "antd";
+
+export function RoomCard({ number, guest, status, reservations }) {
+  console.log("status", guest);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
   const statusStyles = {
-    available: "bg-white",
+    available: "bg-gray-700",
     occupied: "bg-green-600",
     maintenance: "bg-red-600",
     "out-of-order": "bg-gray-400",
     "checking-out": "bg-pink-100",
+    pending_arrival: "bg-yellow-500",
+    check_in: "bg-blue-600",
+    check_out: "bg-red-600",
+    "due-out": "bg-orange-600",
+    booking: "bg-indigo-600",
+    request_cancellation: "bg-gray-600",
+    cancelled: "bg-black",
+  };
+
+  const handleOpenModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalVisible(false);
   };
 
   return (
-    <div className="custom-card" onClick={onClick}>
-      <div className={`custom-card-header ${statusStyles[status]}`}>
-        <span className="custom-card-number">{number}</span>
-        <div className="custom-card-icons">
-          <span className="custom-icon-lightning">⚡</span>
-          <span className="custom-icon-sparkles">✨</span>
+    <>
+      <div className="custom-card border" onClick={handleOpenModal}>
+        <div className={`custom-card-header bg-gray-100`}>
+          <span className="custom-card-number">{number}</span>
+          <div className="custom-card-icons">
+            <span className="custom-icon-lightning">⚡</span>
+            <span className="custom-icon-sparkles">✨</span>
+          </div>
+        </div>
+        <div
+          className={`custom-card-footer  ${statusStyles[status]} text-white`}
+        >
+          {/* {guest}{" "} */}
+          {status
+            .replace("_", " ")
+            .replace(/\b\w/g, (char) => char.toUpperCase())}
         </div>
       </div>
-      <div className="custom-card-footer">{guest}</div>
-    </div>
+
+      <Modal
+        title={`Room ${number} Reservations`}
+        open={isModalVisible}
+        onCancel={handleCloseModal}
+        footer={null}
+      >
+        {reservations.length > 0 ? (
+          <ul>
+            {reservations.map((reservation, index) => (
+              <li key={index} className="mb-2">
+                <div>Name: {reservation.name}</div>
+                <div>Dates: {reservation.dates}</div>
+                <div>Status: {reservation.status}</div>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <div>No reservations found for this room.</div>
+        )}
+      </Modal>
+    </>
   );
 }

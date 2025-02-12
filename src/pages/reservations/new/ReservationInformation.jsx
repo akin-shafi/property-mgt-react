@@ -122,13 +122,18 @@ const ReservationForm = () => {
             navigate("/pms/stay-view");
           }
         } else {
-          message.error(
-            `Error: ${response.message || "Failed to create reservation"}`
-          );
+          message.error("Failed to create 1");
+          // message.error(
+          //   `Error: ${response.message || "Failed to create reservation"}`
+          // );
         }
       } catch (error) {
         console.error("Error submitting reservation:", error);
-        message.error("Error submitting reservation. Please try again.");
+        // Display the error message from the backend
+        // message.error(
+        //   error.message || "Error submitting reservation. Please try again."
+        // );
+        message.error("Failed to create 1");
       } finally {
         setLoading(false); // Reset loading state after action is complete
       }

@@ -1,21 +1,37 @@
 // import React from "react";
 import { Bar } from "react-chartjs-2";
 
-export function OccupancyADRChart() {
+export function OccupancyADRChart({ monthlyOccupancy, monthlyADR }) {
+  // console.log("monthlyOccupancy", monthlyOccupancy);
+  // console.log("monthlyADR", monthlyADR);
+
   const occupancyADRData = {
-    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+    labels: [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ],
     datasets: [
       {
         type: "bar",
         label: "Occupancy",
-        data: [65, 70, 62, 75, 68, 72],
+        data: monthlyOccupancy,
         backgroundColor: "#f87171",
         yAxisID: "y",
       },
       {
         type: "line",
         label: "ADR",
-        data: [1200, 1300, 1250, 1400, 1350, 1450],
+        data: monthlyADR,
         borderColor: "#14b8a6",
         yAxisID: "y1",
       },

@@ -9,6 +9,7 @@ import {
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 
 export function DonutChart({ title, data }) {
+  // console.log("data", data);
   return (
     <Card className="h-full">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -39,7 +40,9 @@ export function DonutChart({ title, data }) {
                 className="w-3 h-3 rounded-full"
                 style={{ backgroundColor: item.color }}
               />
-              <span className="text-sm text-muted-foreground">{item.name}</span>
+              <span className="text-sm text-muted-foreground">
+                {item.name} = {item.value}
+              </span>
             </div>
           ))}
         </div>

@@ -169,7 +169,8 @@ export const createReservation = async (data, token) => {
     return await response.json();
   } catch (error) {
     console.error("Error creating reservation:", error);
-    throw error;
+    // Return the error message so it can be handled by the caller
+    throw new Error(error.message);
   }
 };
 

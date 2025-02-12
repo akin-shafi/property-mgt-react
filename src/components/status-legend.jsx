@@ -1,9 +1,11 @@
 const statuses = [
-  { label: "Assigned", color: "bg-pink-100" },
-  { label: "Checked-in", color: "bg-green-500" },
-  { label: "Checking out", color: "bg-red-200" },
-  { label: "Maintenance", color: "bg-gray-300" },
-  { label: "Complimentary", color: "bg-yellow-100" },
+  { label: "Pending Arrival", color: "bg-pink-100" },
+  { label: "Check-in", color: "bg-green-500" },
+  { label: "Check-out", color: "bg-red-200" },
+  { label: "Due-out", color: "bg-gray-300" },
+  { label: "Booking", color: "bg-yellow-100" },
+  { label: "Request Cancellation", color: "bg-gray-600" },
+  { label: "Cancelled", color: "bg-black" },
 ];
 
 export function StatusLegend() {

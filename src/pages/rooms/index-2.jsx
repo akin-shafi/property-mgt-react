@@ -1,67 +1,123 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Plus, DollarSign } from "lucide-react";
 import { DateNavigation } from "@/components/date-picker";
 import { StatusLegend } from "@/components/status-legend";
 import { RoomSection } from "@/components/room-section";
 import { StatusCounter } from "@/components/status-counter";
 import Layout from "@/components/utils/Layout";
-// import { fetchHotelRoomsWithPrice } from "../../hooks/useAction";
-// import { useSession } from "../../hooks/useSession";
-
-const executiveRooms = [
-  { number: "101", guest: "Milan Pal", status: "occupied" },
-  { number: "102", guest: "Rashmi B", status: "occupied" },
-  { number: "103", status: "out-of-order" },
-  { number: "104", status: "out-of-order" },
-  { number: "106", status: "maintenance" },
-  { number: "107", guest: "Milan Pal", status: "occupied" },
-  { number: "201", guest: "Madhuri V", status: "occupied" },
-  { number: "202", status: "checking-out" },
-  // Add more rooms as needed
-];
-
-const familyRooms = [
-  { number: "105", status: "out-of-order" },
-  { number: "205", guest: "S Akshayaa", status: "checking-out" },
-  { number: "305", status: "maintenance" },
-  { number: "405", guest: "Meena Ravi", status: "occupied" },
-];
+import {
+  fetchHotelRoomsWithPrice,
+  fetchAvailableRoomTypesByHotelId,
+} from "@/hooks/useAction";
+import { useSession } from "@/hooks/useSession";
+import { fetchReservationByHotelId } from "@/hooks/useReservation";
 
 export default function RoomsView() {
-  // const { session } = useSession();
-  // const token = session.token;
-  // const hotelId = session?.user?.hotelId;
-  // const [hotelRooms, setHotelRooms] = useState([]);
+  const { session } = useSession();
+  const token = session.token;
+  const hotelId = session?.user?.hotelId;
+  const [hotelRooms, setHotelRooms] = useState([]);
+  const [roomTypes, setRoomTypes] = useState([]);
+  const [reservations, setReservations] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [expandedSections, setExpandedSections] = useState({});
 
-  // useEffect(() => {
-  //   const fetchRoomData = async () => {
-  //     setLoading(true);
-  //     setError(null);
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      setError(null);
 
-  //     try {
-  //       const hotelData = await fetchHotelRoomsWithPrice(hotelId, token);
-  //       // console.log("hotelData:--", hotelData);
-  //       const formattedRooms = hotelData.map((room) => ({
-  //         id: room.roomName,
-  //         name: `Room ${room.roomName}`,
-  //         status: room.maintenanceStatus,
-  //         capacity: room.capacity,
-  //         availability: room.isAvailable,
-  //       }));
+      try {
+        const availableRoomTypes = await fetchAvailableRoomTypesByHotelId(
+          hotelId,
+          token
+        );
+        setRoomTypes(availableRoomTypes);
 
-  //       setHotelRooms(formattedRooms);
-  //     } catch (err) {
-  //       setError(err.message || "Failed to fetch room data.");
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
+        const hotelData = await fetchHotelRoomsWithPrice(hotelId, token);
+        const formattedRooms = hotelData.map((room) => ({
+          id: room.id,
+          number: room.roomName,
+          status: room.isAvailable ? "available" : "occupied", // Default to available or occupied
+          guest: room.isAvailable ? null : "Occupied by a guest",
+          roomType: room.roomType,
+        }));
+        setHotelRooms(formattedRooms);
 
-  //   if (hotelId && token) {
-  //     fetchRoomData();
-  //   }
-  // }, [hotelId, token]);
+        const reservationData = await fetchReservationByHotelId(hotelId, token);
+        setReservations(reservationData);
+      } catch (err) {
+        setError(err.message || "Failed to fetch data.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (hotelId && token) {
+      fetchData();
+    }
+  }, [hotelId, token]);
+
+  const getRoomStats = (rooms) => {
+    const stats = {
+      occupied: 0,
+      available: 0,
+      complimentary: 0,
+      maintenance: 0,
+    };
+
+    rooms.forEach((room) => {
+      switch (room.status) {
+        case "occupied":
+          stats.occupied++;
+          break;
+        case "available":
+          stats.available++;
+          break;
+        case "complimentary":
+          stats.complimentary++;
+          break;
+        case "maintenance":
+          stats.maintenance++;
+          break;
+        default:
+          break;
+      }
+    });
+
+    return stats;
+  };
+
+  const handleToggleClick = (title) => {
+    setExpandedSections((prevState) => ({
+      ...prevState,
+      [title]: !prevState[title],
+    }));
+  };
+
+  const renderRoomSections = () => {
+    return roomTypes.map((roomType) => {
+      const rooms = hotelRooms.filter((room) => room.roomType === roomType);
+      const roomStats = getRoomStats(rooms);
+      const isOpen = expandedSections[roomType] !== false;
+
+      return (
+        <RoomSection
+          key={roomType}
+          title={roomType}
+          stats={roomStats}
+          rooms={rooms}
+          reservations={reservations} // Pass reservations to RoomSection
+          toggleClick={handleToggleClick}
+          isOpen={isOpen}
+        />
+      );
+    });
+  };
+
   return (
     <Layout>
       <div className="min-h-screen bg-gray-50 p-6">
@@ -71,22 +127,22 @@ export default function RoomsView() {
             <div className="flex gap-4">
               <StatusCounter
                 label="Occupied"
-                count={29}
+                count={getRoomStats(hotelRooms).occupied}
                 color="text-green-600"
               />
               <StatusCounter
                 label="Available"
-                count={41}
+                count={getRoomStats(hotelRooms).available}
                 color="text-green-600"
               />
               <StatusCounter
                 label="Complimentary"
-                count={0}
+                count={getRoomStats(hotelRooms).complimentary}
                 color="text-blue-600"
               />
               <StatusCounter
                 label="Maintenance"
-                count={3}
+                count={getRoomStats(hotelRooms).maintenance}
                 color="text-red-600"
               />
             </div>
@@ -107,27 +163,7 @@ export default function RoomsView() {
           </div>
         </div>
 
-        <RoomSection
-          title="Executive"
-          stats={{
-            occupied: 26,
-            available: 22,
-            complimentary: 0,
-            maintenance: 2,
-          }}
-          rooms={executiveRooms}
-        />
-
-        <RoomSection
-          title="Family Room"
-          stats={{
-            occupied: 3,
-            available: 1,
-            complimentary: 0,
-            maintenance: 1,
-          }}
-          rooms={familyRooms}
-        />
+        {renderRoomSections()}
       </div>
     </Layout>
   );

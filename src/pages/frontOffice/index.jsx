@@ -190,6 +190,12 @@ const Scheduler = () => {
     setAddPaymentModalVisible(true);
   };
 
+  const closeExtentionModal = async () => {
+    setExtendStayModalVisible(false);
+    const updatedReservations = await hotelBookings(hotelId, token);
+    setHotelReservations(updatedReservations);
+  };
+
   return (
     <Layout>
       <Spin spinning={loading}>
@@ -217,7 +223,7 @@ const Scheduler = () => {
 
       <ExtendStayModalVisible
         visible={extendStayModalVisible}
-        onCancel={() => setExtendStayModalVisible(false)}
+        onCancel={() => closeExtentionModal()}
         newEndDate={newEndDate}
         resourceId={selectedResourceId} // Pass the selected resourceId to modal
         token={token}

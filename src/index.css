@@ -265,6 +265,9 @@ body {
   font-size: 18px;
   font-weight: bold;
 }
+.text-white{
+  color: #FFF !important;
+}
 
 .custom-card-icons {
   display: flex;
