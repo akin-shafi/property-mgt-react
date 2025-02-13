@@ -7,6 +7,8 @@ import { KPICard } from "@/components/dashboard-analytics/kpi-card";
 import { PaymentCard } from "@/components/dashboard-analytics/payment-card";
 import Layout from "@/components/utils/Layout";
 import { fetchRoomMetrics, fetchDateBasedMetrics } from "@/hooks/useMetrics";
+import dayjs from "dayjs";
+
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -22,7 +24,6 @@ import {
 } from "chart.js";
 import RevenueChartComponent from "./RevenueChartComponent";
 import { DatePicker, Button } from "antd";
-import dayjs from "dayjs"; // Ant Design uses dayjs for date handling
 
 ChartJS.register(
   CategoryScale,
@@ -168,25 +169,24 @@ export default function Dashboard() {
           <>
             {/* Top Row */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-              <KPICard
-                title="Occupancy (today)"
-                value={`${metricsData?.occupancyPercentage}%`}
-                valueClassName="text-emerald-500"
-              />
-              <PaymentCard
-                title="Revenue (Status)"
-                value={revenueData}
-                valueClassName="text-emerald-500"
-              />
               <DonutChart
-                title="Revenue (today)"
+                title="Reservation Status"
+                data={reservationStatusData}
+              />
+              <DonutChart title="Room Status" data={roomStatusData} />
+
+              <DonutChart
+                // title="Revenue (today)"
+                title={`Revenue (${dayjs(selectedDate).format("MMM DD")})`}
                 data={[
                   { name: "Revenue", value: 75, color: "#0369a1" },
                   { name: "Pending", value: 25, color: "#e5e7eb" },
                 ]}
               />
               <KPICard
-                title="Average Daily Revenue (today)"
+                title={`Avg Daily Revenue  (${dayjs(selectedDate).format(
+                  "MMM DD"
+                )})`}
                 // value={metricsData?.adrData?.adr}
                 value={currencyFormatter.format(metricsData?.adrData?.adr)}
               />
@@ -194,6 +194,17 @@ export default function Dashboard() {
 
             {/* Middle Row */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+              <KPICard
+                title={`Occupancy (${dayjs(selectedDate).format("MMM DD")})`}
+                value={`${metricsData?.occupancyPercentage}%`}
+                valueClassName="text-emerald-500"
+              />
+              <PaymentCard
+                title={`Revenue (${dayjs(selectedDate).format("MMM DD")})`}
+                value={revenueData}
+                valueClassName="text-emerald-500"
+              />
+
               <div className="bg-white p-4 rounded-lg shadow">
                 <h2 className="text-sm text-gray-600 mb-2">Available Rooms</h2>
                 <div className="space-y-2">
@@ -217,12 +228,6 @@ export default function Dashboard() {
                   ))}
                 </div>
               </div>
-
-              <DonutChart
-                title="Reservation Status"
-                data={reservationStatusData}
-              />
-              <DonutChart title="Room Status" data={roomStatusData} />
             </div>
 
             {/* Bottom Row */}
