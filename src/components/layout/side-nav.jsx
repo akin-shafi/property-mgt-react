@@ -1,13 +1,13 @@
 import {
-  Calendar,
+  // Calendar,
   Building2,
-  TrendingUp,
+  // TrendingUp,
   PieChart,
-  Building,
-  Star,
-  Target,
-  BookOpen,
-  User,
+  // Building,
+  // Star,
+  // Target,
+  // BookOpen,
+  // User,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useEffect } from "react";
@@ -15,68 +15,68 @@ import { useNavigation } from "../../context/NavigationContext";
 import UserProfile from "../UserProfile";
 
 const navItems = [
-  {
-    icon: <Calendar className="w-5 h-5" />,
-    label: "Channel Manager & RMS",
-    hasSubItems: true,
-    path: "/channel-manager-rms",
-  },
+  // {
+  //   icon: <Calendar className="w-5 h-5" />,
+  //   label: "Channel Manager & RMS",
+  //   hasSubItems: true,
+  //   path: "/channel-manager-rms",
+  // },
   {
     icon: <Building2 className="w-5 h-5" />,
     label: "PMS",
     hasSubItems: true,
     subItems: [
       { label: "Dashboard", path: "/pms/dashboard" },
+      { label: "Reservation", path: "/pms/list-reservations" },
       { label: "Stay View", path: "/pms/stay-view" },
       { label: "Rooms View", path: "/pms/rooms-view" },
-      { label: "Reservation", path: "/pms/list-reservations" },
       { label: "Guests", path: "/pms/guests" },
-      { label: "Companies", path: "/pms/companies" },
-      { label: "Reports", path: "/pms/arrival-report" },
+      // { label: "Companies", path: "/pms/companies" },
+      // { label: "Reports", path: "/pms/arrival-report" },
     ],
   },
-  {
-    icon: <TrendingUp className="w-5 h-5" />,
-    label: "ERP",
-    hasSubItems: true,
-    path: "/erp",
-  },
+  // {
+  //   icon: <TrendingUp className="w-5 h-5" />,
+  //   label: "ERP",
+  //   hasSubItems: true,
+  //   path: "/erp",
+  // },
   {
     icon: <PieChart className="w-5 h-5" />,
-    label: "Analytics",
+    label: "Reports",
     hasSubItems: true,
-    path: "/analytics",
+    path: "/pms/arrival-report",
   },
-  {
-    icon: <Building className="w-5 h-5" />,
-    label: "Group Hotels",
-    hasSubItems: true,
-    path: "/group-hotels",
-  },
-  {
-    icon: <Star className="w-5 h-5" />,
-    label: "Reviews",
-    hasSubItems: true,
-    path: "/reviews",
-  },
-  {
-    icon: <Target className="w-5 h-5" />,
-    label: "Competition",
-    hasSubItems: true,
-    path: "/competition",
-  },
-  {
-    icon: <BookOpen className="w-5 h-5" />,
-    label: "Booking Engine",
-    hasSubItems: true,
-    path: "/booking-engine",
-  },
-  {
-    icon: <User className="w-5 h-5" />,
-    label: "My Aiosell",
-    hasSubItems: true,
-    path: "/my-aiosell",
-  },
+  // {
+  //   icon: <Building className="w-5 h-5" />,
+  //   label: "Group Hotels",
+  //   hasSubItems: true,
+  //   path: "/group-hotels",
+  // },
+  // {
+  //   icon: <Star className="w-5 h-5" />,
+  //   label: "Reviews",
+  //   hasSubItems: true,
+  //   path: "/reviews",
+  // },
+  // {
+  //   icon: <Target className="w-5 h-5" />,
+  //   label: "Competition",
+  //   hasSubItems: true,
+  //   path: "/competition",
+  // },
+  // {
+  //   icon: <BookOpen className="w-5 h-5" />,
+  //   label: "Booking Engine",
+  //   hasSubItems: true,
+  //   path: "/booking-engine",
+  // },
+  // {
+  //   icon: <User className="w-5 h-5" />,
+  //   label: "My Aiosell",
+  //   hasSubItems: true,
+  //   path: "/my-aiosell",
+  // },
 ];
 
 export function SideNav() {

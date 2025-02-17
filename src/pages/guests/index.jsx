@@ -9,8 +9,15 @@ import {
   Popconfirm,
   message,
   Modal,
+  Avatar,
 } from "antd";
-import { SearchOutlined } from "@ant-design/icons";
+import {
+  SearchOutlined,
+  EyeOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  UserOutlined,
+} from "@ant-design/icons";
 import { CSVLink } from "react-csv"; // Import CSVLink for CSV download functionality
 import {
   fetchAllGuest,
@@ -133,12 +140,22 @@ const Guests = () => {
       setLoading(false);
     }
   };
-
   const columns = [
     {
+      title: "S/N",
+      key: "index",
+      render: (_, __, index) => index + 1,
+      className: "small-font",
+    },
+    {
       title: "Photo ID",
-      dataIndex: "photoId",
       key: "photoId",
+      render: (_, record) => (
+        <Avatar
+          src={record.photoId ? record.photoId : undefined}
+          icon={!record.photoId ? <UserOutlined /> : undefined}
+        />
+      ),
       className: "small-font",
     },
     {
@@ -177,14 +194,14 @@ const Guests = () => {
       render: (_, record) => (
         <>
           <Button type="link" onClick={() => showGuestViewModal(record)}>
-            View Details
+            <EyeOutlined />
           </Button>
           <Button
             type="link"
             primary
             onClick={() => showGuestEditModal(record)}
           >
-            Edit
+            <EditOutlined />
           </Button>
           <Popconfirm
             title="Are you sure to delete this user?"
@@ -193,7 +210,7 @@ const Guests = () => {
             cancelText="No"
           >
             <Button type="link" danger>
-              Delete
+              <DeleteOutlined />
             </Button>
           </Popconfirm>
         </>

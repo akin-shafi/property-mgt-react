@@ -25,6 +25,8 @@ export default function RoomsView() {
   const [error, setError] = useState(null);
   const [expandedSections, setExpandedSections] = useState({});
 
+  console.log("loading", loading);
+  console.log("error", error);
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);

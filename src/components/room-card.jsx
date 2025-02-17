@@ -7,18 +7,23 @@ export function RoomCard({ number, guest, status, reservations }) {
 
   const statusStyles = {
     available: "bg-gray-700",
-    occupied: "bg-green-600",
-    maintenance: "bg-red-600",
-    "out-of-order": "bg-gray-400",
-    "checking-out": "bg-pink-100",
-    pending_arrival: "bg-yellow-500",
-    check_in: "bg-blue-600",
+    pending_arrival: "bg-yellow-600",
+    check_in: "bg-green-500",
     check_out: "bg-red-600",
-    "due-out": "bg-orange-600",
-    booking: "bg-indigo-600",
-    request_cancellation: "bg-gray-600",
-    cancelled: "bg-black",
+    // occupied: "bg-green-600",
+    // maintenance: "bg-red-600",
+    // "out-of-order": "bg-gray-400",
+    // "checking-out": "bg-pink-100",
+
+    // "due-out": "bg-orange-600",
+    // booking: "bg-indigo-600",
+    // request_cancellation: "bg-gray-600",
+    // cancelled: "bg-black",
   };
+
+  // { label: "Pending Arrival", color: "bg-yellow-600" },
+  // { label: "Check-in", color: "bg-green-500" },
+  // { label: "Check-out", color: "bg-red-600" },
 
   const handleOpenModal = () => {
     setIsModalVisible(true);

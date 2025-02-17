@@ -56,9 +56,9 @@ export const fetchActivityOptions = async (token) => {
 };
 
 export const activityColors = {
-  ["pending_arrival"]: { barColor: "#4caf50", backColor: "#a5d6a7" }, // Green for Arrival
-  ["check_in"]: { barColor: "#1976d2", backColor: "#90caf9" }, // Blue for Check-in
-  ["check_out"]: { barColor: "#ff5722", backColor: "#ffccbc" }, // Orange for Check-out
+  ["pending_arrival"]: { barColor: "#ca8a04", backColor: "#faad14" }, // Green for Arrival
+  ["check_in"]: { barColor: "#06a03e", backColor: "#22c55e" }, // Blue for Check-in
+  ["check_out"]: { barColor: "#802310", backColor: "#fb2f2f" }, // Orange for Check-out
   ["due_out"]: { barColor: "#9e9e9e", backColor: "#e0e0e0" }, // Gray for Due-out
   ["bookings"]: { barColor: "#673ab7", backColor: "#d1c4e9" }, // Purple for Booking
   ["Cancelled"]: { barColor: "#f44336", backColor: "#ffcdd2" }, // Red for Cancelled

@@ -10,6 +10,7 @@ import { fetchHotelRoomsWithPrice } from "@/hooks/useAction";
 import { Spin, message } from "antd";
 import AddPaymentModal from "@/components/modals/AddPaymentModal";
 import CheckOutDrawer from "@/components/modals/CheckOutDrawer";
+import { StatusLegend } from "@/components/status-legend";
 
 import ViewDetailsModal from "@/components/modals/ViewDetailsModal";
 import EditReservationModal from "@/components/modals/EditReservationModal";
@@ -199,7 +200,10 @@ const Scheduler = () => {
   return (
     <Layout>
       <Spin spinning={loading}>
+        
         <main className="mt-10 px-4">
+        <StatusLegend />
+
           {error && <div className="text-red-500">{error}</div>}
           <DayPilotScheduler
             {...config}

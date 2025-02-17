@@ -75,7 +75,7 @@ export const getSchedulerConfig = (
     scale: "Day",
     treeEnabled: true,
     days: 31,
-    eventBorderRadius: "10px 50px",
+    eventBorderRadius: "0 50px 0 0",
     startDate: firstDayOfWeek.toISOString().split("T")[0],
 
     onTimeRangeSelected: async (args) => {
